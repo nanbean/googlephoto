@@ -22,17 +22,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 const sessionMiddleware = session({
-	// resave: true,
-	// saveUninitialized: true,
-	store: new fileStore({}),
-	// secret: 'connected google photo',
-	secret: 'connected google photo',
 	resave: false,
-	saveUninitialized: false,
-	cookie: {
-		secure: false,
-		maxAge: 60000 //1 minute
-	}
+	saveUninitialized: true,
+	store: new fileStore({}),
+	secret: 'connected google photo'
 });
 
 // Enable user session handling.
@@ -63,7 +56,7 @@ app.use(function (req, res, next) {
 	next();
 });
 
-// Star the OAuth login process for Google.
+// Start the OAuth login process for Google.
 app.get('/auth/google', passport.authenticate('google', {
 	scope: config.scopes,
 	failureFlash: true,  // Display errors to the user.
