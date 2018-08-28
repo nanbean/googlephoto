@@ -88,16 +88,13 @@ app.get(
 
 // Returns all albums owned by the user.
 app.get('/getAlbums', function (req, res) {
-	// console.log('req.user:', req.user);
-	const userId = req.user.profile.id;
-	
 	var parameters = {pageSize: config.albumPageSize};
 
 	request.get(config.apiEndpoint + '/v1/albums', {
 		headers: {'Content-Type': 'application/json'},
 		qs: parameters,
 		json: true,
-		auth: {'bearer': req.user.token},
+		auth: {'bearer': req.user.token}
 	}, function (error, response, body) {
 		res.status(200).send(body.albums);
 	});

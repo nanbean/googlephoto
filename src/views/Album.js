@@ -5,7 +5,7 @@ import { Header } from 'semantic-ui-react';
 
 import { setAlbumId } from '../actions/ui/album';
 
-class Album extends Component {
+export class Album extends Component {
 	componentDidMount() {
 		const { match } = this.props;
 		const id = match && match.params && match.params.id;
