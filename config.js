@@ -17,7 +17,7 @@ config.oAuthCallbackUrl = 'http://127.0.0.1:' + config.port + '/auth/google/call
 // plus.me scopes.
 config.scopes = [
 	'https://www.googleapis.com/auth/photoslibrary.readonly',
-	'profile',
+	'profile'
 ];
 
 // The number of photos to load for search requests.

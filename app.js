@@ -25,7 +25,7 @@ const sessionMiddleware = session({
 	resave: true,
 	saveUninitialized: true,
 	store: new fileStore({}),
-	secret: 'connected google photo',
+	secret: 'connected google photo'
 });
 
 // Enable user session handling.
@@ -81,14 +81,13 @@ app.get(
 
 // Returns all albums owned by the user.
 app.get('/getAlbums', function (req, res) {
-	const userId = req.user.profile.id;
 	var parameters = {pageSize: config.albumPageSize};
 
 	request.get(config.apiEndpoint + '/v1/albums', {
 		headers: {'Content-Type': 'application/json'},
 		qs: parameters,
 		json: true,
-		auth: {'bearer': req.user.token},
+		auth: {'bearer': req.user.token}
 	}, function (error, response, body) {
 		res.status(200).send(body.albums);
 	});

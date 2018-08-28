@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
 import ui from './ui';
+import albumList from './albumList';
 
 const photoFrame = combineReducers({
-	ui
+	ui,
+	albumList
 });
 
 export default photoFrame;
