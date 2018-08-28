@@ -3,3 +3,8 @@ node_modules
 
 **/sessions
 sessions
+
+build
+yarn.lock
+.vscode/launch.json
+config.js

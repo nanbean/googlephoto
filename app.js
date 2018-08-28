@@ -22,10 +22,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
 const sessionMiddleware = session({
-	resave: true,
-	saveUninitialized: true,
+	// resave: true,
+	// saveUninitialized: true,
 	store: new fileStore({}),
+	// secret: 'connected google photo',
 	secret: 'connected google photo',
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		secure: false,
+		maxAge: 60000 //1 minute
+	}
 });
 
 // Enable user session handling.
@@ -75,13 +82,15 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		res.redirect('/');
+		res.redirect('/getAlbums');
 	}
 );
 
 // Returns all albums owned by the user.
 app.get('/getAlbums', function (req, res) {
+	// console.log('req.user:', req.user);
 	const userId = req.user.profile.id;
+	
 	var parameters = {pageSize: config.albumPageSize};
 
 	request.get(config.apiEndpoint + '/v1/albums', {
