@@ -6,7 +6,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+//var indexRouter = require('./routes/index');
 
 const config = require('./config.js');
 
@@ -19,11 +19,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-
 const sessionMiddleware = session({
-	resave: true,
-	saveUninitialized: true,
+	resave: false,
+	saveUninitialized: false,
 	store: new fileStore({}),
 	secret: 'connected google photo'
 });
@@ -56,7 +54,20 @@ app.use(function (req, res, next) {
 	next();
 });
 
-// Star the OAuth login process for Google.
+/* GET home page. */
+app.get('/', function(req, res) {
+	let sess = req.session;
+	if (sess.passport == undefined) {
+		res.redirect('/auth/google');
+	} else 	if (sess.passport.user.token) {
+		res.redirect('/getAlbums');
+	} else {
+		res.redirect('/auth/google');
+	}
+});
+
+
+// Start the OAuth login process for Google.
 app.get('/auth/google', passport.authenticate('google', {
 	scope: config.scopes,
 	failureFlash: true,  // Display errors to the user.
@@ -75,7 +86,7 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		res.redirect('/');
+		res.redirect('/getAlbums');
 	}
 );
 
