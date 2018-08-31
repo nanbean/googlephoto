@@ -81,7 +81,6 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		// sessionFlag = true;
 		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	}
 );
@@ -89,14 +88,52 @@ app.get(
 // Returns all albums owned by the user.
 app.get('/photo/getAlbumList', function (req, res) {
 	var parameters = {pageSize: config.albumPageSize};
+	
+	if (req.user && req.user.token) {
+		request.get(config.apiEndpoint + '/v1/albums', {
+			headers: {'Content-Type': 'application/json'},
+			qs: parameters,
+			json: true,
+			auth: {'bearer': req.user.token}
+		}, function (error, response, body) {
+			let result = {albums: []};
+			body.albums.forEach((element) => {
+				let album = { 
+					id: element.id,
+					title: element.title,
+					totalMediaItems: Number(element.totalMediaItems),	//string -> number
+					coverPhotoBaseUrl: element.coverPhotoBaseUrl
+				};
+				result.albums.push(album);
+			});
+			res.status(200).send(result);
+		});
+	} else {
+		res.status(401).send('User not logged in.');
+	}
+});
 
-	request.get(config.apiEndpoint + '/v1/albums', {
+// Returns pictures from selected album.
+app.get('/photo/album/:albumId', function (req, res) {
+	let parameters = {albumId: req.params.albumId};
+	request.post(config.apiEndpoint + '/v1/mediaItems:search', {
 		headers: {'Content-Type': 'application/json'},
-		qs: parameters,
-		json: true,
+		json: parameters,
 		auth: {'bearer': req.user.token}
 	}, function (error, response, body) {
-		res.status(200).send(body.albums);
+		let result = {pictures:[]};
+		body.mediaItems.forEach((element) => {
+			if (element.mimeType && element.mimeType.startsWith('image/')) {
+				let picture = {
+					id: element.id,
+					baseUrl: element.baseUrl,
+					mediaMetadata: element.mediaMetadata,
+					mimeType: element.mimeType
+				};
+				result.pictures.push(picture);
+			}
+		});
+		res.status(200).send(body);
 	});
 });
 
