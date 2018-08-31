@@ -21,7 +21,6 @@ const sessionMiddleware = session({
 	resave: true,
 	saveUninitialized: true,
 	store: new fileStore({}),
-	path: '/ss',
 	secret: 'connected google photo'
 });
 
