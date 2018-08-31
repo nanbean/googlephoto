@@ -21,6 +21,7 @@ const sessionMiddleware = session({
 	resave: true,
 	saveUninitialized: true,
 	store: new fileStore({}),
+	path: '/ss',
 	secret: 'connected google photo'
 });
 
@@ -52,18 +53,12 @@ app.use(function (req, res, next) {
 	next();
 });
 
-var sessionFlag = false;
-
 /* GET home page. */
 app.get('/login', function(req, res) {
-	var sess = sessionFlag;
-
-	if (!sess) {
+	if (!req.user || !req.isAuthenticated()) {
 		res.redirect('/auth/google');
-	} else 	if (sess.passport.user.token) {
-		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	} else {
-		res.redirect('/auth/google');
+		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	}
 });
 
@@ -86,13 +81,13 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		sessionFlag = true;
+		// sessionFlag = true;
 		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	}
 );
 
 // Returns all albums owned by the user.
-app.get('/getAlbums', function (req, res) {
+app.get('/photo/getAlbumList', function (req, res) {
 	var parameters = {pageSize: config.albumPageSize};
 
 	request.get(config.apiEndpoint + '/v1/albums', {
@@ -106,9 +101,7 @@ app.get('/getAlbums', function (req, res) {
 });
 
 app.get('/getAuth', function (req, res) {
-	var sess = sessionFlag;
-
-	if (!sess) {
+	if (!req.user || !req.isAuthenticated()) {
 		res.status(200).send(JSON.stringify({auth: false}));
 	} else {
 		res.status(200).send(JSON.stringify({auth: true}));
