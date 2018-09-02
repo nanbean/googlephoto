@@ -52,18 +52,12 @@ app.use(function (req, res, next) {
 	next();
 });
 
-var sessionFlag = false;
-
 /* GET home page. */
 app.get('/login', function(req, res) {
-	var sess = sessionFlag;
-
-	if (!sess) {
+	if (!req.user || !req.isAuthenticated()) {
 		res.redirect('/auth/google');
-	} else 	if (sess.passport.user.token) {
-		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	} else {
-		res.redirect('/auth/google');
+		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	}
 });
 
@@ -86,29 +80,64 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		sessionFlag = true;
 		res.sendFile('index.html', {root: path.join(__dirname, 'build')});
 	}
 );
 
 // Returns all albums owned by the user.
-app.get('/getAlbums', function (req, res) {
+app.get('/photo/getAlbumList', function (req, res) {
 	var parameters = {pageSize: config.albumPageSize};
+	
+	if (req.user && req.user.token) {
+		request.get(config.apiEndpoint + '/v1/albums', {
+			headers: {'Content-Type': 'application/json'},
+			qs: parameters,
+			json: true,
+			auth: {'bearer': req.user.token}
+		}, function (error, response, body) {
+			let result = {albums: []};
+			body.albums.forEach((element) => {
+				let album = { 
+					id: element.id,
+					title: element.title,
+					totalMediaItems: Number(element.totalMediaItems),	//string -> number
+					coverPhotoBaseUrl: element.coverPhotoBaseUrl
+				};
+				result.albums.push(album);
+			});
+			res.status(200).send(result);
+		});
+	} else {
+		res.status(401).send('User not logged in.');
+	}
+});
 
-	request.get(config.apiEndpoint + '/v1/albums', {
+// Returns pictures from selected album.
+app.get('/photo/album/:albumId', function (req, res) {
+	let parameters = {albumId: req.params.albumId};
+	request.post(config.apiEndpoint + '/v1/mediaItems:search', {
 		headers: {'Content-Type': 'application/json'},
-		qs: parameters,
-		json: true,
+		json: parameters,
 		auth: {'bearer': req.user.token}
 	}, function (error, response, body) {
-		res.status(200).send(body.albums);
+		let result = {pictures:[]};
+		body.mediaItems.forEach((element) => {
+			if (element.mimeType && element.mimeType.startsWith('image/')) {
+				let picture = {
+					id: element.id,
+					baseUrl: element.baseUrl,
+					mediaMetadata: element.mediaMetadata,
+					mimeType: element.mimeType
+				};
+				result.pictures.push(picture);
+			}
+		});
+		res.status(200).send(body);
 	});
 });
 
 app.get('/getAuth', function (req, res) {
-	var sess = sessionFlag;
-
-	if (!sess) {
+	if (!req.user || !req.isAuthenticated()) {
 		res.status(200).send(JSON.stringify({auth: false}));
 	} else {
 		res.status(200).send(JSON.stringify({auth: true}));
