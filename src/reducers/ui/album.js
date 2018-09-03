@@ -1,14 +1,23 @@
 import { handleActions } from 'redux-actions';
 
-import { setAlbumId } from '../../actions/ui/album';
+import {
+	setAlbumId,
+	setAlbumTitle
+} from '../../actions/ui/album';
 
-const initialState = {};
+const initialState = {
+	id: ''
+};
 
 export default handleActions(
 	{
 		[setAlbumId]: (state, { payload }) => ({
 			...state,
 			id: payload
+		}),
+		[setAlbumTitle]: (state, { payload }) => ({
+			...state,
+			title: payload
 		})
 	},
 	initialState

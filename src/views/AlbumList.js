@@ -5,7 +5,10 @@ import { Header } from 'semantic-ui-react';
 
 import AlbumLists from '../components/AlbumLists';
 
-import { fetchGetAlbumList } from '../actions/albumActions';
+import {
+	clearAlbumItems,
+	fetchGetAlbumList
+} from '../actions/albumActions';
 import { fetchGetAuth } from '../actions/authActions';
 
 const Button = () => (
@@ -23,6 +26,7 @@ export class AlbumList extends Component {
 	componentDidMount() {
 		this.props.fetchGetAuth();
 		this.props.fetchGetAlbumList();
+		this.props.clearAlbumItems();
 	}
 
 	render() {
@@ -49,6 +53,7 @@ export class AlbumList extends Component {
 AlbumList.propTypes = {
 	albumList: PropTypes.array.isRequired,
 	auth: PropTypes.bool.isRequired,
+	clearAlbumItems: PropTypes.func.isRequired,
 	fetchGetAlbumList: PropTypes.func.isRequired,
 	fetchGetAuth: PropTypes.func.isRequired
 };
@@ -59,6 +64,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+	clearAlbumItems() {
+		dispatch(clearAlbumItems());
+	},
 	fetchGetAlbumList() {
 		dispatch(fetchGetAlbumList());
 	},
