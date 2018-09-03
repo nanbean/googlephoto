@@ -1,13 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import { Image } from 'semantic-ui-react';
 
-class AlbumItem extends Component {
+export class AlbumItem extends Component {
+	handleClick = () => {
+		const { id } = this.props;
+
+		this.props.history.push(`/album/${id}`);
+	}
+
 	render () {
 		const { coverPhotoBaseUrl } = this.props;
 
 		return (
-			<Image src={coverPhotoBaseUrl} />
+			<Image
+				src={coverPhotoBaseUrl}
+				onClick={this.handleClick}
+			/>
 		);
 	}
 }
@@ -18,4 +28,10 @@ AlbumItem.propTypes = {
 	title: PropTypes.string.isRequired
 };
 
-export default AlbumItem;
+AlbumItem.propTypes = {
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	})
+};
+
+export default withRouter(AlbumItem);

@@ -1,16 +1,16 @@
-import reducer from './albumList';
+import reducer from './albumItems';
 import * as types from '../actions/actionTypes';
 
-describe('albumList reducer', () => {
+describe('albumItems reducer', () => {
 	it('should return the initial state', () => {
 		expect(reducer(undefined, {})).toEqual([]);
 	});
 
-	it('should handle FETCH_GET_ALBUM_LIST_SUCCESS', () => {
+	it('should handle FETCH_GET_ALBUM_ITEMS_SUCCESS', () => {
 		expect(
 			reducer([], {
-				type: types.FETCH_GET_ALBUM_LIST_SUCCESS,
-				body: {albums: ['a', 'b', 'c']}
+				type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS,
+				body: {mediaItems: ['a', 'b', 'c']}
 			})
 		).toEqual(['a', 'b', 'c']);
 
@@ -18,8 +18,8 @@ describe('albumList reducer', () => {
 			reducer(
 				['a', 'b', 'c'],
 				{
-					type: types.FETCH_GET_ALBUM_LIST_SUCCESS,
-					body: {albums: ['a', 'b', 'c', 'd']}
+					type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS,
+					body: {mediaItems: ['a', 'b', 'c', 'd']}
 				}
 			)
 		).toEqual(['a', 'b', 'c', 'd']);
