@@ -4,6 +4,8 @@ build
 **/node_modules
 node_modules
 
+lib
+
 **/sessions
 sessions
 yarn.lock
