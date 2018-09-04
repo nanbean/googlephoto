@@ -13,16 +13,30 @@ describe('Album Test Cases', () => {
 		fetchMock.restore();
 	});
 
-	it('creates FETCH_TODOS_SUCCESS when fetching todos has been done', () => {
+	it('creates FETCH_GET_ALBUM_LIST_SUCCESS when fetching fetchGetAlbumList has been done', () => {
 		fetchMock
-			.getOnce('/photo/getAlbumList', { body: { albumList: ['a', 'b', 'c'] }, headers: { 'content-type': 'application/json' } });
+			.getOnce('/photo/getAlbumList', { body: { albums: ['a', 'b', 'c'] }, headers: { 'content-type': 'application/json' } });
 		const expectedActions = [
 			{ type: types.FETCH_GET_ALBUM_LIST_REQUEST },
-			{ type: types.FETCH_GET_ALBUM_LIST_SUCCESS, body: { albumList: ['a', 'b', 'c'] } }
+			{ type: types.FETCH_GET_ALBUM_LIST_SUCCESS, body: { albums: ['a', 'b', 'c'] } }
 		];
 		const store = mockStore({ albumList: [] });
 
 		return store.dispatch(actions.fetchGetAlbumList()).then(() => {
+			expect(store.getActions()).toEqual(expectedActions);
+		});
+	});
+
+	it('creates FETCH_GET_ALBUM_ITEMS_SUCCESS when fetching fetchGetAlbumItems has been done', () => {
+		fetchMock
+			.getOnce('/photo/album/test', { body: { mediaItems: ['a', 'b', 'c'] }, headers: { 'content-type': 'application/json' } });
+		const expectedActions = [
+			{ type: types.FETCH_GET_ALBUM_ITEMS_REQUEST },
+			{ type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS, body: { mediaItems: ['a', 'b', 'c'] } }
+		];
+		const store = mockStore({ mediaItems: [] });
+
+		return store.dispatch(actions.fetchGetAlbumItems('test')).then(() => {
 			expect(store.getActions()).toEqual(expectedActions);
 		});
 	});

@@ -1,7 +1,9 @@
 import { createActions } from 'redux-actions';
 
 export const {
-	setAlbumId
+	setAlbumId,
+	setAlbumTitle
 } = createActions(
-	'SET_ALBUM_ID'
+	'SET_ALBUM_ID',
+	'SET_ALBUM_TITLE'
 );
