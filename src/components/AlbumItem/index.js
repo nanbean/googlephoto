@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Image } from 'semantic-ui-react';
+
+import './index.css';
 
 export class AlbumItem extends Component {
 	handleClick = () => {
@@ -11,13 +12,17 @@ export class AlbumItem extends Component {
 	}
 
 	render () {
-		const { coverPhotoBaseUrl } = this.props;
+		const { coverPhotoBaseUrl, title } = this.props;
 
 		return (
-			<Image
-				src={coverPhotoBaseUrl}
-				onClick={this.handleClick}
-			/>
+			<div className="album-item">
+				<div
+					className="image"
+					style={{backgroundImage: `url(${coverPhotoBaseUrl})`}}
+					onClick={this.handleClick}
+				/>
+				<div className="title">{title}</div>
+			</div>
 		);
 	}
 }

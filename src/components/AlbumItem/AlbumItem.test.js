@@ -10,7 +10,7 @@ describe('AlbumItem Test Cases', () => {
 		<AlbumItem
 			coverPhotoBaseUrl={'test'}
 			id={'test'}
-			title={'test'}
+			title={'test title'}
 		/>
 	);
 
@@ -19,8 +19,14 @@ describe('AlbumItem Test Cases', () => {
 	});
 
 	it('should have proper image', () => {
-		const image = component.find('Image');
+		const image = component.find('div').at(1);
 		expect(image).toHaveLength(1);
-		expect(image.props().src).toBe('test');
+		expect(image.props().style.backgroundImage).toBe('url(test)');
+	});
+
+	it('should have proper title', () => {
+		const title = component.find('div').at(2);
+		expect(title).toHaveLength(1);
+		expect(title.text()).toBe('test title');
 	});
 });

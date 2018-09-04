@@ -1,0 +1,16 @@
+.album-item {
+  display: inline-block;
+  margin: 30px;
+  cursor: pointer;
+}
+
+.image {
+  width: 250px;
+  height: 250px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.title {
+  font-size: 20px;
+}
