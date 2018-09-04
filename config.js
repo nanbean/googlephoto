@@ -1,10 +1,10 @@
 const config = {};
 
 // The OAuth client ID from the Google Developers console.
-config.oAuthClientID = '983240319982-oo0cg8md3kgocse1bkmsb749dkmrldfj.apps.googleusercontent.com';
+config.oAuthClientID = 'your client id';
 
 // The OAuth client secret from the Google Developers console.
-config.oAuthclientSecret = 'RqKiN7ZdOtSDZ7t7Zn7F5kcR';
+config.oAuthclientSecret = 'your client secret';
 
 // The port where the app should listen for requests.
 config.port = 8090;
@@ -31,8 +31,5 @@ config.albumPageSize = 50;
 
 // The API end point to use. Do not change.
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';
-
-// Google user login token saved file.
-config.tokenPath = './sessions/token';
 
 module.exports = config;
