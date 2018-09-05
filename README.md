@@ -6,6 +6,7 @@ How to install
 ```bash
 yarn install
 yarn build
+yarn build:server
 ```
 
 How to develop
