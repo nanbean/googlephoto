@@ -21,9 +21,15 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 const albumCache = persist.create({
 	dir: 'persist-albumcache/',
-	ttl: 600000,  // 10 minutes
+	ttl: config.albumCacheTtl
 });
 albumCache.init();
+
+const photoCache = persist.create({
+	dir: 'persist-photocache/',
+	ttl: config.photoCacheTtl
+});
+photoCache.init();
 
 const sessionMiddleware = session({
 	resave: false,
@@ -130,8 +136,14 @@ app.get('/photo/album/:albumId', async function (req, res) {
 	};
 	let token = getToken();
 	if (token != undefined) {
-		const {result} = await getSearchedPhotoList(parameters, token);
-		res.status(200).send(result);
+		const cachedPhotos = await photoCache.getItem(parameters.albumId);
+		if (cachedPhotos) {
+			res.status(200).send(cachedPhotos);
+		} else {
+			const {result} = await getSearchedPhotoList(parameters, token);
+			res.status(200).send(result);
+			photoCache.setItem(parameters.albumId, result);
+		}
 	} else {
 		res.status(401).send('User not logged in.');
 	}

@@ -10,3 +10,5 @@ lib
 sessions
 yarn.lock
 .vscode
+persist-albumcache
+persist-photocache
