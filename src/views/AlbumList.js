@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Header } from 'semantic-ui-react';
 
 import AlbumLists from '../components/AlbumLists';
 
@@ -11,17 +10,6 @@ import {
 } from '../actions/albumActions';
 import { fetchGetAuth } from '../actions/authActions';
 
-const Button = () => (
-	<button
-		type="button"
-		onClick={() => {
-			window.location='/login';
-		}}
-	>
-		Log In
-	</button>
-);
-
 export class AlbumList extends Component {
 	componentDidMount() {
 		this.props.fetchGetAuth();
@@ -30,21 +18,13 @@ export class AlbumList extends Component {
 	}
 
 	render() {
-		const { albumList, auth } = this.props;
+		const { albumList } = this.props;
 
 		return (
 			<div>
-				<Header as="h2" textAlign="center">
-					<Header.Content>
-						Album List
-					</Header.Content>
-				</Header>
 				<AlbumLists
 					albumList={albumList}
 				/>
-				{!auth &&
-					<Button />
-				}
 			</div>
 		);
 	}
@@ -52,15 +32,13 @@ export class AlbumList extends Component {
 
 AlbumList.propTypes = {
 	albumList: PropTypes.array.isRequired,
-	auth: PropTypes.bool.isRequired,
 	clearAlbumItems: PropTypes.func.isRequired,
 	fetchGetAlbumList: PropTypes.func.isRequired,
 	fetchGetAuth: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-	albumList: state.albumList,
-	auth: state.auth
+	albumList: state.albumList
 });
 
 const mapDispatchToProps = dispatch => ({
