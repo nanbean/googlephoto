@@ -5,6 +5,7 @@ var request = require('request-promise');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const persist = require('node-persist');
 
 const config = require('./config.js');
 const fs = require('fs');
@@ -17,6 +18,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
+
+const albumCache = persist.create({
+	dir: 'persist-albumcache/',
+	ttl: config.albumCacheTtl
+});
+albumCache.init();
+
+const photoCache = persist.create({
+	dir: 'persist-photocache/',
+	ttl: config.photoCacheTtl
+});
+photoCache.init();
 
 const sessionMiddleware = session({
 	resave: false,
@@ -93,15 +106,23 @@ app.get(
 app.get('/photo/getAlbumList', async function (req, res) {
 	let token = getToken();
 	if (token != undefined) {
-		const {result, error} = await getAlbumList(req, token);
-		if (error) {
-			fs.writeFile(config.tokenPath, '');
-			req.logout();
-			req.session.destroy();
-			res.sendFile('index.html', {root: path.join(__dirname, '../build')});
-			res.status(401).send('User token is not valid');
+		const userId = req.user.profile.id;
+		const cachedAlbums = await albumCache.getItem(userId);
+		if (cachedAlbums) {
+			res.status(200).send(cachedAlbums);
+		} else {
+			const {result, error} = await getAlbumList(req, token);	
+			if (error) {
+				fs.writeFile(config.tokenPath, '');
+				req.logout();
+				req.session.destroy();
+				res.sendFile('index.html', {root: path.join(__dirname, '../build')});
+				res.status(401).send('User token is not valid');
+			} else {
+				res.status(200).send(result);
+				albumCache.setItem(userId, result);
+			}
 		}
-		res.status(200).send(result);
 	} else {
 		res.status(401).send('User not logged in.');
 	}
@@ -115,8 +136,14 @@ app.get('/photo/album/:albumId', async function (req, res) {
 	};
 	let token = getToken();
 	if (token != undefined) {
-		const {result} = await getSearchedPhotoList(parameters, token);
-		res.status(200).send(result);
+		const cachedPhotos = await photoCache.getItem(parameters.albumId);
+		if (cachedPhotos) {
+			res.status(200).send(cachedPhotos);
+		} else {
+			const {result} = await getSearchedPhotoList(parameters, token);
+			res.status(200).send(result);
+			photoCache.setItem(parameters.albumId, result);
+		}
 	} else {
 		res.status(401).send('User not logged in.');
 	}
