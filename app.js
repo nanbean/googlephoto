@@ -107,7 +107,7 @@ app.get('/photo/getAlbumList', async function (req, res) {
 		} else {
 			const {result, error} = await getAlbumList(req, token);	
 			if (error) {
-				await fs.writeFile(config.tokenPath, '');
+				fs.writeFile(config.tokenPath, '');
 				req.logout();
 				req.session.destroy();
 				res.status(401).send('User token is not valid');
