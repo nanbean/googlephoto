@@ -41,4 +41,9 @@ config.albumCacheTtl = 1800000;
 // TTL value of photo list cache
 config.photoCacheTtl = 1800000;
 
+// AI filter list
+config.filterList = ['NONE', 'LANDSCAPES', 'RECEIPTS', 'CITYSCAPES', 'LANDMARKS',
+	'SELFIES','PEOPLE','PETS','WEDDINGS','BIRTHDAYS','DOCUMENTS','TRAVEL','ANIMALS',
+	'FOOD','SPORT','NIGHT','PERFORMANCES','WHITEBOARDS','SCREENSHOTS','UTILITY'];
+
 module.exports = config;
