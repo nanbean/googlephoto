@@ -110,6 +110,15 @@ class PhotoLists extends Component {
 	render () {
 		const { albumItems } = this.props;
 
+		if (albumItems.length === 0) {
+			cache.clearAll();
+			cellPositioner.reset({
+				columnCount: 6,
+				columnWidth,
+				spacer: 10
+			});
+		}
+		
 		return (
 			<div className="album-lists">
 				{

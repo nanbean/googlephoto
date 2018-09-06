@@ -24,6 +24,30 @@ export const fetchGetAlbumList = () => dispatch => {
 		.catch(ex => dispatch(fetchGetAlbumListFailure(ex)));
 };
 
+const fetchGetSharedAlbumListRequest = () => ({
+	type: types.FETCH_GET_SHARED_ALBUM_LIST_REQUEST
+});
+
+export const fetchGetSharedAlbumListSuccess = body => ({
+	type: types.FETCH_GET_SHARED_ALBUM_LIST_SUCCESS,
+	body
+});
+
+export const fetchGetSharedAlbumListFailure = ex => ({
+	type: types.FETCH_GET_SHARED_ALBUM_LIST_FAILURE,
+	ex
+});
+
+export const fetchGetSharedAlbumList = () => dispatch => {
+	const apiUrl = '/photo/getSharedAlbumList';
+
+	dispatch(fetchGetSharedAlbumListRequest());
+	return fetch(apiUrl)
+		.then(res => res.json())
+		.then(body => dispatch(fetchGetSharedAlbumListSuccess(body)))
+		.catch(ex => dispatch(fetchGetSharedAlbumListFailure(ex)));
+};
+
 const fetchGetAlbumItemsRequest = () => ({
 	type: types.FETCH_GET_ALBUM_ITEMS_REQUEST
 });
