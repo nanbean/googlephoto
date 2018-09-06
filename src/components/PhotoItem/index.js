@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { Image } from 'semantic-ui-react';
 
 export class PhotoItem extends Component {
 	handleClick = () => {
@@ -11,11 +10,16 @@ export class PhotoItem extends Component {
 	}
 
 	render () {
-		const { baseUrl } = this.props;
+		const { baseUrl, filename, height, width } = this.props;
 
 		return (
-			<Image
+			<img
+				alt={filename}
 				src={baseUrl}
+				style={{
+					height: height,
+					width: width
+				}}
 				onClick={this.handleClick}
 			/>
 		);
@@ -25,7 +29,9 @@ export class PhotoItem extends Component {
 PhotoItem.propTypes = {
 	baseUrl: PropTypes.string.isRequired,
 	filename: PropTypes.string.isRequired,
-	id: PropTypes.string.isRequired
+	height: PropTypes.string.isRequired,
+	id: PropTypes.string.isRequired,
+	width: PropTypes.string.isRequired
 };
 
 PhotoItem.propTypes = {
