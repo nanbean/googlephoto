@@ -27,6 +27,15 @@ const cellPositioner = createMasonryCellPositioner({
 });
 
 class AlbumLists extends Component {
+	componentWillUnmount () {
+		cache.clearAll();
+		cellPositioner.reset({
+			columnCount: 6,
+			columnWidth: 300,
+			spacer: 10
+		});
+	}
+
 	cellRenderer = ({ index, key, parent, style }) => {
 		const { albumList } = this.props;
 		const datum = albumList[index];
@@ -55,14 +64,17 @@ class AlbumLists extends Component {
 
 		return (
 			<div className="album-lists">
-				<Masonry
-					cellCount={albumList.length}
-					cellMeasurerCache={cache}
-					cellPositioner={cellPositioner}
-					cellRenderer={this.cellRenderer}
-					height={900}
-					width={1870}
-				/>
+				{
+					albumList.length > 0 &&
+					<Masonry
+						cellCount={albumList.length}
+						cellMeasurerCache={cache}
+						cellPositioner={cellPositioner}
+						cellRenderer={this.cellRenderer}
+						height={900}
+						width={1870}
+					/>
+				}
 			</div>
 		);
 	}

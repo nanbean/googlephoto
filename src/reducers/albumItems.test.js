@@ -10,7 +10,7 @@ describe('albumItems reducer', () => {
 		expect(
 			reducer([], {
 				type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS,
-				body: {mediaItems: ['a', 'b', 'c']}
+				body: {pictures: ['a', 'b', 'c']}
 			})
 		).toEqual(['a', 'b', 'c']);
 
@@ -19,7 +19,7 @@ describe('albumItems reducer', () => {
 				['a', 'b', 'c'],
 				{
 					type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS,
-					body: {mediaItems: ['a', 'b', 'c', 'd']}
+					body: {pictures: ['a', 'b', 'c', 'd']}
 				}
 			)
 		).toEqual(['a', 'b', 'c', 'd']);
