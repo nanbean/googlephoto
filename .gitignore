@@ -5,6 +5,7 @@ build
 node_modules
 
 lib
+log
 
 **/sessions
 sessions
@@ -12,3 +13,4 @@ yarn.lock
 .vscode
 persist-albumcache
 persist-photocache
+persist-sharedAlbumcache

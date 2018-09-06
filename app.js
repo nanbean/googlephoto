@@ -13,11 +13,16 @@ const fs = require('fs');
 var app = express();
 var fileStore = sessionFileStore(session);
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
+
+// create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {flags: 'a'});
+ 
+// setup the logger
+app.use(logger('combined', {stream: accessLogStream}));
 
 const albumCache = persist.create({
 	dir: 'persist-albumcache/',
@@ -30,6 +35,12 @@ const photoCache = persist.create({
 	ttl: config.photoCacheTtl
 });
 photoCache.init();
+
+const sharedAlbumCache = persist.create({
+	dir: 'persist-sharedAlbumcache/',
+	ttl: config.albumCacheTtl
+});
+sharedAlbumCache.init();
 
 const sessionMiddleware = session({
 	resave: false,
@@ -49,22 +60,6 @@ auth(passport);
 // Set up passport and session handling.
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Middleware that adds the user of this session as a local variable,
-// so it can be displayed on all pages when logged in.
-app.use(function (req, res, next) {
-	res.locals.name = '-';
-	if (req.user && req.user.profile && req.user.profile.name) {
-		res.locals.name =
-				req.user.profile.name.givenName || req.user.profile.displayName;
-	}
-
-	res.locals.avatarUrl = '';
-	if (req.user && req.user.profile && req.user.profile.photos) {
-		res.locals.avatarUrl = req.user.profile.photos[0].value;
-	}
-	next();
-});
 
 /* GET home page. */
 app.get('/login', function(req, res) {
@@ -106,8 +101,7 @@ app.get(
 app.get('/photo/getAlbumList', async function (req, res) {
 	let token = getToken();
 	if (token != undefined) {
-		const userId = req.user.profile.id;
-		const cachedAlbums = await albumCache.getItem(userId);
+		const cachedAlbums = await albumCache.getItem(token);
 		if (cachedAlbums) {
 			res.status(200).send(cachedAlbums);
 		} else {
@@ -116,11 +110,10 @@ app.get('/photo/getAlbumList', async function (req, res) {
 				fs.writeFile(config.tokenPath, '');
 				req.logout();
 				req.session.destroy();
-				res.sendFile('index.html', {root: path.join(__dirname, '../build')});
 				res.status(401).send('User token is not valid');
 			} else {
 				res.status(200).send(result);
-				albumCache.setItem(userId, result);
+				albumCache.setItem(token, result);
 			}
 		}
 	} else {
@@ -150,44 +143,77 @@ app.get('/photo/album/:albumId', async function (req, res) {
 });
 
 // Lists all shared albums available in the Sharing tab of the user's Google Photos app.
-app.get('/photo/getSharedAlbumList', function (req, res) {
-	let parameters = {pageSize: config.albumPageSize};
+app.get('/photo/getSharedAlbumList', async function (req, res) {
 	let token = getToken();
 	if (token != undefined) {
-		request.get(config.apiEndpoint + '/v1/sharedAlbums', {
-			headers: {'Content-Type': 'application/json'},
-			qs: parameters,
-			json: true,
-			auth: {'bearer': getToken()}
-		}, function (error, response, body) {
-			let result = {sharedAlbums: []};
-			body.sharedAlbums.forEach((element) => {
-				let album = { 
-					id: element.id,
-					title: element.title,
-					totalMediaItems: Number(element.totalMediaItems),	//string -> number
-					coverPhotoBaseUrl: element.coverPhotoBaseUrl
-				};
-				result.sharedAlbums.push(album);
-			});
-			result.nextPageToken = body.nextPageToken;
-			res.status(200).send(result);
-		});
+		const cachedSharedAlbums = await sharedAlbumCache.getItem(token);
+		if (cachedSharedAlbums) {
+			res.status(200).send(cachedSharedAlbums);
+		} else {
+			const {result, error} = await getSharedAlbumList(req, token);
+			if (error) {
+				fs.writeFile(config.tokenPath, '');
+				req.logout();
+				req.session.destroy();
+				res.status(401).send('User token is not valid');
+			} else {
+				res.status(200).send(result);
+				sharedAlbumCache.setItem(token, result);
+			}
+		}
 	} else {
 		res.status(401).send('User not logged in.');
 	}
 });
 
-app.get('/getAuth', function (req, res) {
-	if (!req.user || !req.isAuthenticated()) {
-		res.status(200).send(JSON.stringify({auth: false}));
+// Returns filtered pictures from selected album.
+app.post('/photo/search', async function (req, res) {
+	let parameters = {
+		albumId: req.body.albumId,
+		pageSize: config.searchPageSize,
+		filters: {contentFilter: {includedContentCategories:req.body.filters}}
+	};
+	let token = getToken();
+	let cacheKey = 'FILTERS:' + req.body.filters.toString();
+	if (token != undefined) {
+		const cachedPhotos = await photoCache.getItem(cacheKey);
+		if (cachedPhotos) {
+			res.status(200).send(cachedPhotos);
+		} else {
+			const {result} = await getSearchedPhotoList(parameters, token);
+			res.status(200).send(result);
+			photoCache.setItem(cacheKey, result);
+		}
 	} else {
-		res.status(200).send(JSON.stringify({auth: true}));
+		res.status(401).send('User not logged in.');
 	}
 });
 
+// Returns if user logged in.
+app.get('/getAuth', function (req, res) {
+	try {
+		if (!getToken()) {
+			res.status(200).send(JSON.stringify({auth: false}));
+		} else {
+			res.status(200).send(JSON.stringify({auth: true}));
+		}
+	} catch (err) {
+		res.status(200).send(JSON.stringify({auth: false}));
+	}
+});
+
+// Returns filter list.
+app.get('/photo/getFilterList', function (req, res) {
+	res.status(200).send(JSON.stringify({filterList:config.filterList}));
+});
+
 var getToken = function () {
-	let token = fs.readFileSync(config.tokenPath, 'utf-8');
+	let token = '';
+	try {
+		token = fs.readFileSync(config.tokenPath, 'utf-8');
+	} catch (err) {
+		return null;
+	}
 	return token;
 };
 
@@ -209,7 +235,7 @@ async function getAlbumList (req, token) {
 				let album = {
 					id: element.id,
 					title: element.title,
-					totalMediaItems: Number(element.totalMediaItems),	//string -> number
+					totalMediaItems: Number(element.mediaItemsCount),	//string -> number
 					coverPhotoBaseUrl: element.coverPhotoBaseUrl
 				};
 				result.albums.push(album);
@@ -223,6 +249,38 @@ async function getAlbumList (req, token) {
 	return {result, error};
 }
 
+async function getSharedAlbumList (req, token) {
+	let parameters = {pageSize: config.albumPageSize};
+	let result = {sharedAlbums: []};
+	let error = null;
+
+	try {
+		do {
+			const body = await request.get(config.apiEndpoint + '/v1/sharedAlbums', {
+				headers: {'Content-Type': 'application/json'},
+				qs: parameters,
+				json: true,
+				auth: {'bearer': token}
+			});
+			body.sharedAlbums.forEach((element) => {
+				if (element.title) {
+					let album = { 
+						id: element.id,
+						title: element.title,
+						totalMediaItems: Number(element.mediaItemsCount),	//string -> number
+						coverPhotoBaseUrl: element.coverPhotoBaseUrl
+					};
+					result.sharedAlbums.push(album);
+				}
+			});
+			parameters.pageToken = body.nextPageToken;
+		} while (parameters.pageToken != null);
+	} catch (err) {
+		error = new Error('getSharedAlbumList error', err);
+	}
+	return {result, error};
+}
+
 async function getSearchedPhotoList(parameters, token) {
 	let result = {pictures:[]};
 	let error = null;
@@ -231,7 +289,7 @@ async function getSearchedPhotoList(parameters, token) {
 		do {
 			const body = await request.post(config.apiEndpoint + '/v1/mediaItems:search', {
 				headers: {'Content-Type': 'application/json'},
-				qs: parameters,
+				body: parameters,
 				json: true,
 				auth: {'bearer': token}
 			});
@@ -252,7 +310,6 @@ async function getSearchedPhotoList(parameters, token) {
 	} catch (err) {
 		error = new Error('getSearchedPhotoList error', err);
 	}
-
 	return {result, error};
 }
 
