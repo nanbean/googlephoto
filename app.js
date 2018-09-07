@@ -19,7 +19,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {flags: 'a'});
+var logDir = '../log';
+if (!fs.existsSync(path.join(__dirname, logDir))) {
+	fs.mkdirSync(path.join(__dirname, logDir));
+}
+var accessLogStream = fs.createWriteStream(
+	path.join(__dirname, logDir + '/access.log'), {flags: 'a'});	
  
 // setup the logger
 app.use(logger('combined', {stream: accessLogStream}));
