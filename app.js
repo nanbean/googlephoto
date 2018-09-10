@@ -174,7 +174,6 @@ app.get('/photo/getSharedAlbumList', async function (req, res) {
 // Returns filtered pictures from selected album.
 app.post('/photo/search', async function (req, res) {
 	let parameters = {
-		albumId: req.body.albumId,
 		pageSize: config.searchPageSize,
 		filters: {contentFilter: {includedContentCategories:req.body.filters}}
 	};
