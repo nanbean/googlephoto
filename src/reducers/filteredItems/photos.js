@@ -1,8 +1,8 @@
-import * as types from '../actions/actionTypes';
+import * as types from '../../actions/actionTypes';
 
 const initialState = [];
 
-export default function filterItems (state = initialState, action) {
+export default function photos (state = initialState, action) {
 	switch (action.type) {
 	case types.FETCH_GET_FILTERED_ITEMS_SUCCESS:
 		if (action.body && action.body.pictures) {

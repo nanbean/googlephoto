@@ -1,8 +1,8 @@
-import * as types from '../actions/actionTypes';
+import * as types from '../../actions/actionTypes';
 
 const initialState = [];
 
-export default function albumItems (state = initialState, action) {
+export default function photos (state = initialState, action) {
 	switch (action.type) {
 	case types.FETCH_GET_ALBUM_ITEMS_SUCCESS:
 		if (action.body && action.body.pictures) {

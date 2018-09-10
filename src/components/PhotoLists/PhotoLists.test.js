@@ -10,7 +10,7 @@ describe('PhotoLists Test Cases', () => {
 	const component = mount(
 		<BrowserRouter>
 			<PhotoLists
-				albumItems={[
+				photos={[
 					{
 						baseUrl: 'baseUrl1',
 						id: 'id1',

@@ -1,7 +1,7 @@
-import reducer from './albumItems';
-import * as types from '../actions/actionTypes';
+import reducer from './photos';
+import * as types from '../../actions/actionTypes';
 
-describe('albumItems reducer', () => {
+describe('albumItems photos reducer', () => {
 	it('should return the initial state', () => {
 		expect(reducer(undefined, {})).toEqual([]);
 	});
