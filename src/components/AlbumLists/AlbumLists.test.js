@@ -10,7 +10,7 @@ describe('AlbumLists Test Cases', () => {
 	const component = mount(
 		<BrowserRouter>
 			<AlbumLists
-				albumList={[
+				albums={[
 					{
 						coverPhotoBaseUrl: 'coverPhotoBaseUrl1',
 						id: 'id1',

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Loader } from 'semantic-ui-react';
 
 import PhotoLists from '../components/PhotoLists';
 import FilterSelector from '../components/FilterSelector';
@@ -17,7 +18,7 @@ export class Filter extends Component {
 	}
 
 	render() {
-		const { filter, filteredItems, filterList } = this.props;
+		const { fetching, filter, photos, filterList } = this.props;
 
 		return (
 			<div>
@@ -27,10 +28,11 @@ export class Filter extends Component {
 					setFilter={this.props.setFilter}
 					fetchGetFilteredItems={this.props.fetchGetFilteredItems}
 				/>
+				<Loader active={fetching} size="huge"/>
 				{
-					filteredItems && filteredItems.length > 0 &&
+					photos && photos.length > 0 &&
 					<PhotoLists
-						albumItems={filteredItems}
+						photos={photos}
 					/>
 				}
 			</div>
@@ -41,16 +43,18 @@ export class Filter extends Component {
 Filter.propTypes = {
 	fetchGetFilteredItems: PropTypes.func.isRequired,
 	fetchGetFilterList: PropTypes.func.isRequired,
+	fetching: PropTypes.bool.isRequired,
 	filter: PropTypes.string.isRequired,
-	filteredItems: PropTypes.array.isRequired,
 	filterList: PropTypes.array.isRequired,
+	photos: PropTypes.array.isRequired,
 	setFilter: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
+	fetching: state.filteredItems.fetching,
 	filter: state.filter,
 	filterList: state.filterList,
-	filteredItems: state.filteredItems.slice(0, 50)
+	photos: state.filteredItems.photos.slice(0, 50)
 });
 
 const mapDispatchToProps = dispatch => ({

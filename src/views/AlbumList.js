@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Loader } from 'semantic-ui-react';
 
 import AlbumLists from '../components/AlbumLists';
 
@@ -18,12 +19,13 @@ export class AlbumList extends Component {
 	}
 
 	render() {
-		const { albumList } = this.props;
+		const { albums, fetching } = this.props;
 
 		return (
 			<div>
+				<Loader active={fetching} size="huge"/>
 				<AlbumLists
-					albumList={albumList}
+					albums={albums}
 				/>
 			</div>
 		);
@@ -31,14 +33,16 @@ export class AlbumList extends Component {
 }
 
 AlbumList.propTypes = {
-	albumList: PropTypes.array.isRequired,
+	albums: PropTypes.array.isRequired,
 	clearAlbumItems: PropTypes.func.isRequired,
 	fetchGetAlbumList: PropTypes.func.isRequired,
-	fetchGetAuth: PropTypes.func.isRequired
+	fetchGetAuth: PropTypes.func.isRequired,
+	fetching: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-	albumList: state.albumList
+	albums: state.albumList.albums,
+	fetching: state.albumList.fetching
 });
 
 const mapDispatchToProps = dispatch => ({

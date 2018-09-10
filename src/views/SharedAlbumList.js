@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Loader } from 'semantic-ui-react';
 
 import AlbumLists from '../components/AlbumLists';
 
@@ -18,12 +19,13 @@ export class SharedAlbumList extends Component {
 	}
 
 	render() {
-		const { sharedAlbumList } = this.props;
+		const { albums, fetching } = this.props;
 
 		return (
 			<div>
+				<Loader active={fetching} size="huge"/>
 				<AlbumLists
-					albumList={sharedAlbumList}
+					albums={albums}
 				/>
 			</div>
 		);
@@ -31,14 +33,16 @@ export class SharedAlbumList extends Component {
 }
 
 SharedAlbumList.propTypes = {
+	albums: PropTypes.array.isRequired,
 	clearAlbumItems: PropTypes.func.isRequired,
 	fetchGetAuth: PropTypes.func.isRequired,
 	fetchGetSharedAlbumList: PropTypes.func.isRequired,
-	sharedAlbumList: PropTypes.array.isRequired
+	fetching: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-	sharedAlbumList: state.sharedAlbumList
+	albums: state.sharedAlbumList.albums,
+	fetching: state.sharedAlbumList.fetching
 });
 
 const mapDispatchToProps = dispatch => ({

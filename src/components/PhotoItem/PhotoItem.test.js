@@ -19,7 +19,7 @@ describe('PhotoItem Test Cases', () => {
 	});
 
 	it('should have proper image', () => {
-		const image = component.find('Image');
+		const image = component.find('img');
 		expect(image).toHaveLength(1);
 		expect(image.props().src).toBe('test');
 	});

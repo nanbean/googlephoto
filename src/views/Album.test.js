@@ -9,13 +9,14 @@ describe('Album Test Cases', () => {
 	const component = mount(
 		<Album
 			fetchGetAlbumItems={() => {}}
+			fetching={false}
 			setAlbumId={() => {}}
 			setAlbumTitle={() => {}}
 			id="test id"
 			title="test title"
 			match={{params: {id: 'test id'}}}
-			albumItems={[]}
-			albumList={[
+			photos={[]}
+			albums={[
 				{
 					id: 'test id',
 					title: 'test title'
@@ -36,5 +37,33 @@ describe('Album Test Cases', () => {
 	it('HeaderSubheader should have proper album id', () => {
 		const headerSubheader = component.find('HeaderSubheader');
 		expect(headerSubheader.text()).toBe('test id');
+	});
+
+	it('should not render Loader when fetching is false', () => {
+		const loader = component.find('Loader');
+		expect(loader.props().active).toBe(false);
+	});
+
+	it('should render Loader when fetching is true', () => {
+		const component2 = mount(
+			<Album
+				fetchGetAlbumItems={() => {}}
+				fetching={true}
+				setAlbumId={() => {}}
+				setAlbumTitle={() => {}}
+				id="test id"
+				title="test title"
+				match={{params: {id: 'test id'}}}
+				photos={[]}
+				albums={[
+					{
+						id: 'test id',
+						title: 'test title'
+					}
+				]}
+			/>
+		);
+		const loader = component2.find('Loader');
+		expect(loader.props().active).toBe(true);
 	});
 });
