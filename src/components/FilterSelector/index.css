@@ -1,0 +1,17 @@
+.filter-list {
+	padding: 5px;
+	margin: 20px;
+	padding: 20px;
+	border: 1px solid rgba(34,36,38,.1);
+	border-radius: .28571429rem;
+}
+
+.filter-checkbox {
+	display: inline-block;
+	margin: 10px;
+}
+
+.ui.checkbox > label{
+  padding-left: 2rem;
+  font-size: 2rem;
+}

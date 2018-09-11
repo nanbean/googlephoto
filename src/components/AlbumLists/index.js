@@ -37,8 +37,8 @@ class AlbumLists extends Component {
 	}
 
 	cellRenderer = ({ index, key, parent, style }) => {
-		const { albumList } = this.props;
-		const datum = albumList[index];
+		const { albums } = this.props;
+		const datum = albums[index];
 
 		return (
 			<CellMeasurer
@@ -60,14 +60,14 @@ class AlbumLists extends Component {
 	}
 
 	render () {
-		const { albumList } = this.props;
+		const { albums } = this.props;
 
 		return (
 			<div className="album-lists">
 				{
-					albumList.length > 0 &&
+					albums && albums.length > 0 &&
 					<Masonry
-						cellCount={albumList.length}
+						cellCount={albums.length}
 						cellMeasurerCache={cache}
 						cellPositioner={cellPositioner}
 						cellRenderer={this.cellRenderer}
@@ -81,7 +81,7 @@ class AlbumLists extends Component {
 }
 
 AlbumLists.propTypes = {
-	albumList: PropTypes.array.isRequired
+	albums: PropTypes.array.isRequired
 };
 
 export default AlbumLists;

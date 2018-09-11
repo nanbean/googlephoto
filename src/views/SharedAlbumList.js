@@ -7,14 +7,14 @@ import AlbumLists from '../components/AlbumLists';
 
 import {
 	clearAlbumItems,
-	fetchGetAlbumList
+	fetchGetSharedAlbumList
 } from '../actions/albumActions';
 import { fetchGetAuth } from '../actions/authActions';
 
-export class AlbumList extends Component {
+export class SharedAlbumList extends Component {
 	componentDidMount() {
 		this.props.fetchGetAuth();
-		this.props.fetchGetAlbumList();
+		this.props.fetchGetSharedAlbumList();
 		this.props.clearAlbumItems();
 	}
 
@@ -32,25 +32,25 @@ export class AlbumList extends Component {
 	}
 }
 
-AlbumList.propTypes = {
+SharedAlbumList.propTypes = {
 	albums: PropTypes.array.isRequired,
 	clearAlbumItems: PropTypes.func.isRequired,
-	fetchGetAlbumList: PropTypes.func.isRequired,
 	fetchGetAuth: PropTypes.func.isRequired,
+	fetchGetSharedAlbumList: PropTypes.func.isRequired,
 	fetching: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-	albums: state.albumList.albums,
-	fetching: state.albumList.fetching
+	albums: state.sharedAlbumList.albums,
+	fetching: state.sharedAlbumList.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
 	clearAlbumItems() {
 		dispatch(clearAlbumItems());
 	},
-	fetchGetAlbumList() {
-		dispatch(fetchGetAlbumList());
+	fetchGetSharedAlbumList() {
+		dispatch(fetchGetSharedAlbumList());
 	},
 	fetchGetAuth() {
 		dispatch(fetchGetAuth());
@@ -60,4 +60,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(AlbumList);
+)(SharedAlbumList);

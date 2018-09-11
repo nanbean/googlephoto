@@ -6,7 +6,6 @@ import {
 	createMasonryCellPositioner,
 	Masonry
 } from 'react-virtualized';
-import ImageMeasurer from 'react-virtualized-image-measurer';
 
 import PhotoItem from '../PhotoItem';
 
@@ -29,10 +28,11 @@ const cellPositioner = createMasonryCellPositioner({
 	spacer: 10
 });
 
-const MasonryComponent = ({ itemsWithSizes }) => {
+const MasonryComponent = ({ photos }) => {
 	function cellRenderer({ index, key, parent, style }) {
-		const { item, size } = itemsWithSizes[index];
-		const height = columnWidth * (size.height / size.width) || defaultHeight;
+		const item = photos[index];
+		const {mediaMetadata} = item;
+		const height = mediaMetadata && columnWidth * (mediaMetadata.height / mediaMetadata.width) || defaultHeight;
 
 		return (
 			<CellMeasurer cache={cache} index={index} key={key} parent={parent}>
@@ -58,7 +58,7 @@ const MasonryComponent = ({ itemsWithSizes }) => {
 
 	return (
 		<Masonry
-			cellCount={itemsWithSizes.length}
+			cellCount={photos.length}
 			cellMeasurerCache={cache}
 			cellPositioner={cellPositioner}
 			cellRenderer={cellRenderer}
@@ -69,7 +69,7 @@ const MasonryComponent = ({ itemsWithSizes }) => {
 };
 
 MasonryComponent.propTypes = {
-	itemsWithSizes: PropTypes.array.isRequired
+	photos: PropTypes.array.isRequired
 };
 
 class PhotoLists extends Component {
@@ -83,8 +83,8 @@ class PhotoLists extends Component {
 	}
 
 	cellRenderer = ({ index, key, parent, style }) => {
-		const { albumItems } = this.props;
-		const datum = albumItems[index];
+		const { photos } = this.props;
+		const datum = photos[index];
 
 		return (
 			<CellMeasurer
@@ -108,24 +108,22 @@ class PhotoLists extends Component {
 	}
 
 	render () {
-		const { albumItems } = this.props;
+		const { photos } = this.props;
+
+		if (photos && photos.length === 0) {
+			cache.clearAll();
+			cellPositioner.reset({
+				columnCount: 6,
+				columnWidth,
+				spacer: 10
+			});
+		}
 
 		return (
 			<div className="album-lists">
 				{
-					albumItems && albumItems.length > 0 &&
-					<ImageMeasurer
-						items={albumItems}
-						image={item => {
-							return item.baseUrl;
-						}}
-						defaultHeight={defaultHeight}
-						defaultWidth={defaultWidth}
-					>
-						{({ itemsWithSizes }) => {
-							return <MasonryComponent itemsWithSizes={itemsWithSizes} />;
-						}}
-					</ImageMeasurer>
+					photos && photos.length > 0 &&
+					<MasonryComponent photos={photos} />
 				}
 			</div>
 		);
@@ -133,7 +131,7 @@ class PhotoLists extends Component {
 }
 
 PhotoLists.propTypes = {
-	albumItems: PropTypes.array.isRequired
+	photos: PropTypes.array.isRequired
 };
 
 export default PhotoLists;

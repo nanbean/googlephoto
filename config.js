@@ -1,13 +1,19 @@
 const config = {};
 
 // The OAuth client ID from the Google Developers console.
-config.oAuthClientID = 'your client id';
+config.oAuthClientID = '983240319982-oo0cg8md3kgocse1bkmsb749dkmrldfj.apps.googleusercontent.com';
 
 // The OAuth client secret from the Google Developers console.
-config.oAuthclientSecret = 'your client secret';
+config.oAuthclientSecret = 'RqKiN7ZdOtSDZ7t7Zn7F5kcR';
 
 // The port where the app should listen for requests.
 config.port = 8090;
+
+config.sessionPath = '/var/tmp/sessions';
+
+config.persistPath = '/var/tmp'
+
+config.logPath = '/var/tmp'
 
 // The callback to use for OAuth requests. This is the URL where the app is
 // running. For testing and running it locally, use 127.0.0.1.
@@ -33,7 +39,12 @@ config.albumPageSize = 50;
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';
 
 // Google user login token saved file.
-config.tokenPath = './sessions/token';
+config.tokenPath = config.sessionPath + '/token';
+
+// Cache file path
+config.albumCachePath = './persist-albumcache/';
+config.photoCachePath = './persist-photocache/';
+config.sharedAlbumCachePath = './persist-sharedAlbumcache/';
 
 // TTL value of album list cache(ex. 600000 equals 10 minutes)
 config.albumCacheTtl = 1800000;

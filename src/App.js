@@ -6,7 +6,9 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import {
 	Album,
-	AlbumList
+	AlbumList,
+	Filter,
+	SharedAlbumList
 } from './views';
 
 import MenuBar from './components/MenuBar';
@@ -16,6 +18,8 @@ import './App.css';
 const Routing = () => (
 	<Switch>
 		<Route exact path="/albumlist" component={AlbumList} />
+		<Route exact path="/filter" component={Filter} />
+		<Route exact path="/sharedalbumlist" component={SharedAlbumList} />
 		<Route path="/album/:id" component={Album} />
 		<Redirect from="/" to="/albumlist"/>
 	</Switch>

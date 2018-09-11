@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Header } from 'semantic-ui-react';
+import {
+	Header,
+	Loader
+} from 'semantic-ui-react';
 
 import PhotoLists from '../components/PhotoLists';
 
@@ -13,9 +16,9 @@ import { fetchGetAlbumItems } from '../actions/albumActions';
 
 export class Album extends Component {
 	componentDidMount() {
-		const { albumList, match } = this.props;
+		const { albums, match } = this.props;
 		const id = match && match.params && match.params.id;
-		const album = albumList && albumList.find(i => i.id === id);
+		const album = albums && albums.find(i => i.id === id);
 		const title = album && album.title;
 
 		this.props.setAlbumId(id);
@@ -24,7 +27,7 @@ export class Album extends Component {
 	}
 
 	render() {
-		const { albumItems, id, title } = this.props;
+		const { fetching, id, photos, title } = this.props;
 
 		return (
 			<div>
@@ -34,8 +37,9 @@ export class Album extends Component {
 						<Header.Subheader>{id}</Header.Subheader>
 					</Header.Content>
 				</Header>
+				<Loader active={fetching} size="huge"/>
 				<PhotoLists
-					albumItems={albumItems}
+					photos={photos}
 				/>
 			</div>
 		);
@@ -43,24 +47,26 @@ export class Album extends Component {
 }
 
 Album.propTypes = {
-	albumItems: PropTypes.array.isRequired,
-	albumList: PropTypes.array.isRequired,
+	albums: PropTypes.array.isRequired,
 	fetchGetAlbumItems: PropTypes.func.isRequired,
+	fetching: PropTypes.bool.isRequired,
 	id: PropTypes.string.isRequired,
 	match: PropTypes.shape({
 		params: PropTypes.shape({
 			id: PropTypes.string.isRequired
 		}).isRequired
 	}).isRequired,
+	photos: PropTypes.array.isRequired,
 	setAlbumId: PropTypes.func.isRequired,
 	setAlbumTitle: PropTypes.func.isRequired,
 	title: PropTypes.string
 };
 
 const mapStateToProps = state => ({
-	albumItems: state.albumItems,
-	albumList: state.albumList,
+	albums: state.albumList.albums,
+	fetching: state.albumItems.fetching,
 	id: state.ui.album.id,
+	photos: state.albumItems.photos,
 	title: state.ui.album.title
 });
 
