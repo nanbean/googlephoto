@@ -19,25 +19,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {flags: 'a'});
- 
+var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flags: 'a'});
+
 // setup the logger
 app.use(logger('combined', {stream: accessLogStream}));
 
 const albumCache = persist.create({
-	dir: 'persist-albumcache/',
+	dir: config.persistPath + '/persist-albumcache/',
 	ttl: config.albumCacheTtl
 });
 albumCache.init();
 
 const photoCache = persist.create({
-	dir: 'persist-photocache/',
+	dir: config.persistPath + '/persist-photocache/',
 	ttl: config.photoCacheTtl
 });
 photoCache.init();
 
 const sharedAlbumCache = persist.create({
-	dir: 'persist-sharedAlbumcache/',
+	dir: config.persistPath + '/persist-sharedAlbumcache/',
 	ttl: config.albumCacheTtl
 });
 sharedAlbumCache.init();
@@ -45,7 +45,7 @@ sharedAlbumCache.init();
 const sessionMiddleware = session({
 	resave: false,
 	saveUninitialized: true,
-	store: new fileStore({}),
+	store: new fileStore({path: config.sessionPath}),
 	secret: 'connected google photo'
 });
 
@@ -105,7 +105,7 @@ app.get('/photo/getAlbumList', async function (req, res) {
 		if (cachedAlbums) {
 			res.status(200).send(cachedAlbums);
 		} else {
-			const {result, error} = await getAlbumList(req, token);	
+			const {result, error} = await getAlbumList(req, token);
 			if (error) {
 				fs.writeFile(config.tokenPath, '');
 				req.logout();
@@ -264,7 +264,7 @@ async function getSharedAlbumList (req, token) {
 			});
 			body.sharedAlbums.forEach((element) => {
 				if (element.title) {
-					let album = { 
+					let album = {
 						id: element.id,
 						title: element.title,
 						totalMediaItems: Number(element.mediaItemsCount),	//string -> number

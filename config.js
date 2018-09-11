@@ -9,6 +9,12 @@ config.oAuthclientSecret = 'your client secret';
 // The port where the app should listen for requests.
 config.port = 8090;
 
+config.sessionPath = '/var/tmp/sessions';
+
+config.persistPath = '/var/tmp'
+
+config.logPath = '/var/tmp'
+
 // The callback to use for OAuth requests. This is the URL where the app is
 // running. For testing and running it locally, use 127.0.0.1.
 config.oAuthCallbackUrl = 'http://127.0.0.1:' + config.port + '/auth/google/callback';
@@ -33,7 +39,7 @@ config.albumPageSize = 50;
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';
 
 // Google user login token saved file.
-config.tokenPath = './sessions/token';
+config.tokenPath = config.sessionPath + '/token';
 
 // TTL value of album list cache(ex. 600000 equals 10 minutes)
 config.albumCacheTtl = 1800000;
