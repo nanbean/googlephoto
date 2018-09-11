@@ -78,11 +78,11 @@ export class AlbumSlide extends Component {
 		return (
 			photos.map((curr, i) => {
 				let baseUrl = photos[i].baseUrl;
-				let width = photos[i].mediaMetadata.width;
-				let height = photos[i].mediaMetadata.height;
+				let w = photos[i].mediaMetadata.width;
+				let h = photos[i].mediaMetadata.height;
 				let infoSize = '';
-				if (width && height) {
-					infoSize = `=w${width}-h${height}`;
+				if (w && h) {
+					infoSize = `=w${w}-h${h}`;
 				}
 
 				return (
@@ -122,8 +122,8 @@ export class AlbumSlide extends Component {
 		if (!dom)
 			return 0;
 
-		let clientW = dom.clientWidth;
-		return  clientW;
+		let cw = dom.clientWidth;
+		return  cw;
 	}
 
 	handleDotClick = (i) => {
