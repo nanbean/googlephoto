@@ -8,10 +8,10 @@ import Settings from './SlideSettings';
 
 import Slide from '../components/Slide';
 import ToggleSettings from '../components/ToggleSettings';
-
 import Dots from '../components/Dots';
 import LeftArrow from '../components/Arrows/leftArrow';
 import RightArrow from '../components/Arrows/rightArrow';
+import SlideExitButton from '../components/SlideExitButton';
 
 import {
 	setAlbumId,
@@ -191,9 +191,7 @@ export class AlbumSlide extends Component {
 					coolButtons={coolButtons}
 				/>
 
-				<div className="slider-exit">
-					<Link to={`/album/${id}`}> Exit </Link>
-				</div>
+				<SlideExitButton id={id} />
 			</div>
 		);
 	}

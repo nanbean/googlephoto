@@ -7,6 +7,7 @@ import {
 } from 'semantic-ui-react';
 
 import PhotoLists from '../components/PhotoLists';
+import SlideShowButton from '../components/SlideShowButton';
 
 import {
 	setAlbumId,
@@ -31,13 +32,13 @@ export class Album extends Component {
 
 		return (
 			<div>
-				<Header as="h2" textAlign="center">
-					<Header.Content>
+				<div>
+					<Loader active={fetching} size="huge"/>
+					<Header as="h2" textAlign="center">
 						{title}
-						<Header.Subheader>{id}</Header.Subheader>
-					</Header.Content>
-				</Header>
-				<Loader active={fetching} size="huge"/>
+					</Header>
+					<SlideShowButton id={id}/>
+				</div>
 				<PhotoLists
 					photos={photos}
 				/>
