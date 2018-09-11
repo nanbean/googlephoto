@@ -76,8 +76,7 @@ app.get('/login', function(req, res) {
 app.get('/auth/google', passport.authenticate('google', {
 	scope: config.scopes,
 	failureFlash: true,  // Display errors to the user.
-	session: true,
-	accessType: 'offline'
+	session: true
 }));
 
 // Callback receiver for the OAuth process after log in.
@@ -87,8 +86,7 @@ app.get(
 		'google', {
 			failureRedirect: '/',
 			failureFlash: true,
-			session: true,
-			accessType: 'offline'
+			session: true
 		}
 	),
 	function (req, res) {
