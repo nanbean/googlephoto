@@ -21,28 +21,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
 // create a write stream (in append mode)
-if (!fs.existsSync(config.logPath)) {
-	fs.mkdirSync(config.logPath);
-}
 var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flags: 'a'});
 
 // setup the logger
 app.use(logger('combined', {stream: accessLogStream}));
 
 const albumCache = persist.create({
-	dir: config.persistPath + '/persist-albumcache/',
+	dir: config.albumCachePath,
 	ttl: config.albumCacheTtl
 });
 albumCache.init();
 
 const photoCache = persist.create({
-	dir: config.persistPath + '/persist-photocache/',
+	dir: config.photoCachePath,
 	ttl: config.photoCacheTtl
 });
 photoCache.init();
 
 const sharedAlbumCache = persist.create({
-	dir: config.persistPath + '/persist-sharedAlbumcache/',
+	dir: config.sharedAlbumCachePath,
 	ttl: config.albumCacheTtl
 });
 sharedAlbumCache.init();
@@ -218,6 +215,12 @@ app.get('/getAuth', function (req, res) {
 // Returns filter list.
 app.get('/photo/getFilterList', function (req, res) {
 	res.status(200).send(JSON.stringify({filterList:config.filterList}));
+});
+
+// Returns updated album information.
+app.get('/photo/getAlbumUpdate', function (req, res) {
+	let updateInfo = fs.readFileSync(config.albumUpdateInfoPath, 'utf-8');
+	res.status(200).send(updateInfo);
 });
 
 module.exports = app;
