@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Settings from './SlideSettings';
+import SlideSettings from '../components/SlideSettings';
 
 import Slide from '../components/Slide';
 import ToggleSettings from '../components/ToggleSettings';
@@ -12,6 +10,10 @@ import Dots from '../components/Dots';
 import LeftArrow from '../components/Arrows/leftArrow';
 import RightArrow from '../components/Arrows/rightArrow';
 import SlideExitButton from '../components/SlideExitButton';
+
+import {
+	setFullScreen
+} from '../actions/ui';
 
 import {
 	setAlbumId,
@@ -40,6 +42,7 @@ export class AlbumSlide extends Component {
 		const album = albums && albums.find(i => i.id === id);
 		const title = album && album.title;
 
+		this.props.setFullScreen(true);
 		this.props.setAlbumId(id);
 		title && this.props.setAlbumTitle(title);
 		this.props.fetchGetAlbumItems(id);
@@ -64,6 +67,10 @@ export class AlbumSlide extends Component {
 			let x = window.clearInterval(this.state.interval);
 			this.setState({ interval : x });
 		}
+	}
+
+	componentWillUnmount () {
+		this.props.setFullScreen(false);
 	}
 
 	renderSlides = () => {
@@ -155,16 +162,16 @@ export class AlbumSlide extends Component {
 
 		return (
 			<div className="slider">
-				<Settings
-					visible={settingVisible}
+				<SlideSettings
 					autoplay={autoplay}
+					showDots={showDots}
+					toggleSetting={toggleSetting}
+					visible={settingVisible}
 				/>
-
 				<ToggleSettings
 					visible={settingVisible}
 					toggleSetting={toggleSetting}
 				/>
-
 				<div className="slider-wrapper"
 					style={{
 						transform: `translateX(${translateValue}px)`,
@@ -174,14 +181,12 @@ export class AlbumSlide extends Component {
 						this.renderSlides()
 					}
 				</div>
-
 				<Dots
 					visible={showDots}
 					index={index}
 					images={photos}
 					dotClick={this.handleDotClick}
 				/>
-
 				<LeftArrow
 					prevSlide={this.goToPrevSlide}
 					coolButtons={coolButtons}
@@ -190,7 +195,6 @@ export class AlbumSlide extends Component {
 					nextSlide={this.goToNextSlide}
 					coolButtons={coolButtons}
 				/>
-
 				<SlideExitButton id={id} />
 			</div>
 		);
@@ -212,6 +216,7 @@ AlbumSlide.propTypes = {
 	photos: PropTypes.array.isRequired,
 	setAlbumId: PropTypes.func.isRequired,
 	setAlbumTitle: PropTypes.func.isRequired,
+	setFullScreen: PropTypes.func.isRequired,
 	setIndex: PropTypes.func.isRequired,
 	settingVisible: PropTypes.bool.isRequired,
 	setTranslateValue: PropTypes.func.isRequired,
@@ -247,6 +252,9 @@ const mapDispatchToProps = dispatch => ({
 	},
 	setAlbumTitle(params) {
 		dispatch(setAlbumTitle(params));
+	},
+	setFullScreen(params) {
+		dispatch(setFullScreen(params));
 	},
 
 	setTranslateValue: (params) => {

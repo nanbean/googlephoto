@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import closeImg from '../Img/settings-close.svg';
-import gearIcon from '../Img/settings.svg';
+import {
+	Button
+} from 'semantic-ui-react';
+
+import './index.css';
 
 const ToggleSettings = ({ visible, toggleSetting }) => (
-	<img
-		src={visible ? closeImg : gearIcon}
-		alt=""
-		className="settings-icon"
-		onClick={() => toggleSetting('visible')}
-	/>
+	<div className="slide-setting-button">
+		<Button
+			icon={visible ? 'close' : 'setting'}
+			onClick={() => toggleSetting('visible')}
+		/>
+	</div>
 );
 
 ToggleSettings.propTypes = {

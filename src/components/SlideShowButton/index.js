@@ -17,8 +17,8 @@ export class SlideShowButton extends Component {
 				<Link
 					to={`/albumslide/${id}`}
 				>
-					<Button icon labelPosition='left'>
-						<Icon name='eye' />
+					<Button icon labelPosition="left">
+						<Icon name="eye" />
 						Slide Show
 					</Button>
 				</Link>

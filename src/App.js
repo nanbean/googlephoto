@@ -29,38 +29,28 @@ const Routing = () => (
 
 class App extends React.Component {
 	render() {
-		const { auth, match, location } = this.props;
+		const { auth, fullScreen } = this.props;
 
-		if (location.pathname.indexOf('albumslide') !== -1) {
-			return (
-				<div className="App">
-					<Routing />
-				</div>
-			);
-		}
-		else {
-			return (
-				<div className="App">
-					<MenuBar
-						auth={auth}
-						match={match}
-					/>
-					<Routing />
-				</div>
-			);
-		}
+		return (
+			<div className="App">
+				<MenuBar
+					auth={auth}
+					visible={!fullScreen}
+				/>
+				<Routing />
+			</div>
+		);
 	}
 }
 
 App.propTypes = {
 	auth: PropTypes.bool.isRequired,
-	match: PropTypes.shape({
-		url: PropTypes.string.isRequired
-	})
+	fullScreen: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-	auth: state.auth
+	auth: state.auth,
+	fullScreen: state.ui.fullScreen
 });
 
 export default withRouter(connect(

@@ -1,0 +1,6 @@
+.slide-setting-button {
+  position: fixed;
+	right: 60px;
+	top: 80px;
+  z-index: 1;
+}

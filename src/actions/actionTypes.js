@@ -28,3 +28,5 @@ export const SET_INDEX = 'SET_INDEX';
 // Settings
 export const TOGGLE_AUTOPLAY = 'TOGGLE_AUTOPLAY';
 export const TOGGLE_SETTING = 'TOGGLE_SETTING';
+
+export const SET_FULL_SCREEN = 'SET_FULL_SCREEN';

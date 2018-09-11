@@ -17,8 +17,8 @@ export class SlideExitButton extends Component {
 				<Link
 					to={`/album/${id}`}
 				>
-					<Button icon labelPosition='left'>
-						<Icon name='stop' />
+					<Button icon labelPosition="left">
+						<Icon name="stop" />
 						Exit
 					</Button>
 				</Link>
