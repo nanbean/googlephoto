@@ -9,16 +9,19 @@ config.oAuthclientSecret = 'your client secret';
 // The port where the app should listen for requests.
 config.port = 8090;
 
-config.sessionPath = config.persistPath + '/sessions';
-
 // Cache file path
 config.persistPath = '/var/tmp';
 config.albumCachePath = config.persistPath + '/persist-albumcache/';
 config.photoCachePath = config.persistPath + '/persist-photocache/';
 config.sharedAlbumCachePath = config.persistPath + '/persist-sharedAlbumcache/';
 
+// Path of Google login session
+config.sessionPath = config.persistPath + '/sessions';
+
+// Log file path
 config.logPath = config.persistPath;
 
+// Album udpate information path
 config.albumUpdateInfoPath = config.persistPath + '/updateInfo.json';
 
 // The callback to use for OAuth requests. This is the URL where the app is
