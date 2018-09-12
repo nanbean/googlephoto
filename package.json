@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start:server": "node index.js",
+    "start:server": "node index_pc.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "babel -d lib *.js",
