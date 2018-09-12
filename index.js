@@ -2,7 +2,7 @@ var app = require('./lib/app');
 var debug = require('debug')('googlephoto:server');
 var http = require('http');
 
-var config = require('./config');
+var config = require('./lib/config');
 
 /**
  * Get port from environment and store in Express.
