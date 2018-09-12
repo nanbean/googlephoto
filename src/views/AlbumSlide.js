@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import SlideSettings from '../components/SlideSettings';
 
-import Slide from '../components/Slide';
+import SlideList from '../components/SlideList';
 import ToggleSettings from '../components/ToggleSettings';
 import Dots from '../components/Dots';
 import LeftArrow from '../components/Arrows/leftArrow';
@@ -71,32 +71,6 @@ export class AlbumSlide extends Component {
 
 	componentWillUnmount () {
 		this.props.setFullScreen(false);
-	}
-
-	renderSlides = () => {
-		//console.log('[AlbumSlide] renderSlides');
-		//console.log(this.props.albumItems);
-
-		if (!this.props.photos) {
-			return;
-		}
-
-		let photos = this.props.photos;
-		return (
-			photos.map((curr, i) => {
-				let baseUrl = photos[i].baseUrl;
-				let w = photos[i].mediaMetadata.width;
-				let h = photos[i].mediaMetadata.height;
-				let infoSize = '';
-				if (w && h) {
-					infoSize = `=w${w}-h${h}`;
-				}
-
-				return (
-					<Slide key={i} image={baseUrl.concat(infoSize)} />
-				);
-			})
-		);
 	}
 
 	goToPrevSlide = () => {
@@ -172,15 +146,12 @@ export class AlbumSlide extends Component {
 					visible={settingVisible}
 					toggleSetting={toggleSetting}
 				/>
-				<div className="slider-wrapper"
-					style={{
-						transform: `translateX(${translateValue}px)`,
-						transition: 'transform ease-out 0.45s'
-					}}>
-					{
-						this.renderSlides()
-					}
-				</div>
+
+				<SlideList
+					photos={photos}
+					translateValue={translateValue}
+				/>
+
 				<Dots
 					visible={showDots}
 					index={index}
@@ -195,6 +166,7 @@ export class AlbumSlide extends Component {
 					nextSlide={this.goToNextSlide}
 					coolButtons={coolButtons}
 				/>
+
 				<SlideExitButton id={id} />
 			</div>
 		);
