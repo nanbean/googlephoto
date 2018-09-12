@@ -4,18 +4,6 @@ var http = require('http');
 
 var config = require('./lib/config');
 
-// Setting for logging. pmloglib write to /val/log/message
-const pmloglib = require('pmloglib');
-const context = new pmloglib.Context('googlephoto');
-
-// Setting for using webos-service
-const Service = require('webos-service');
-const service = new Service('com.webos.service.googlephoto');
-
-const printDbgMsg = (msg) => context.log(pmloglib.LOG_INFO, 'GOOGLEPHOTO_SERVICE', {}, msg);
-
-printDbgMsg('[googlephoto Service] starting....');
-
 /**
  * Get port from environment and store in Express.
  */
@@ -96,23 +84,3 @@ function onListening() {
 		: 'port ' + addr.port;
 	debug('Listening on ' + bind);
 }
-
-service.register('start', function(message) {
-	printDbgMsg('[googlephoto Service] googlephoto Start Called...');
-
-	service.activityManager.complete(message.activity, {restart: false});
-
-	message.respond({
-		returnValue: true
-	});
-});
-
-service.register('stop', function(message) {
-	printDbgMsg('[googlephoto Service] googlephoto Stop Called...');
-
-	message.respond({
-		returnValue: true
-	});
-});
-
-app.setService(service);

@@ -12,6 +12,8 @@ const scheduler = require('./scheduler.js');
 const config = require('./config.js');
 const fs = require('fs');
 
+var webOsservice;
+
 var app = express();
 var fileStore = sessionFileStore(session);
 
@@ -107,7 +109,7 @@ app.get('/photo/getAlbumList', async function (req, res) {
 		if (cachedAlbums) {
 			res.status(200).send(cachedAlbums);
 		} else {
-			const {result, error} = await googleapi.getAlbumList(req, token);	
+			const {result, error} = await googleapi.getAlbumList(req, token);
 			if (error) {
 				fs.writeFile(config.tokenPath, '');
 				req.logout();
@@ -220,5 +222,25 @@ app.get('/photo/getAlbumUpdate', function (req, res) {
 	let updateInfo = fs.readFileSync(config.albumUpdateInfoPath, 'utf-8');
 	res.status(200).send(updateInfo);
 });
+
+app.get('/push', function (req, res) {
+	webOsservice.call('luna://com.webos.notification/createToast',
+		{
+			sourceId: 'com.lge.app.viewster',
+			onclick: {
+				appId: 'com.lge.app.viewster'
+			},
+			message: 'You have new photos',
+			noaction: false,
+			persistent: true
+		},
+		(res) => {}
+	);
+	res.status(200).send({result: true});
+});
+
+app.setService = function (service) {
+	webOsservice = service;
+}
 
 module.exports = app;
