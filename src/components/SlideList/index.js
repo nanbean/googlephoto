@@ -16,7 +16,7 @@ export class SlideList extends Component {
 		return (
 			photos.map((i) => {
 				return (
-					<Slide key={i} image={`${i.baseUrl}=w1920-h1080`} />
+					<Slide key={i.id} image={`${i.baseUrl}=w1920-h1080`} />
 				);
 			})
 		);

@@ -18,9 +18,7 @@ class Slide extends Component {
 }
 
 Slide.propTypes = {
-	height: PropTypes.string.isRequired,
-	image: PropTypes.string.isRequired,
-	width: PropTypes.string.isRequired
+	image: PropTypes.string.isRequired
 };
 
 export default Slide;

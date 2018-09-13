@@ -47,8 +47,6 @@ export class AlbumSlide extends Component {
 		this.props.setAlbumId(id);
 		title && this.props.setAlbumTitle(title);
 		this.props.fetchGetAlbumItems(id);
-
-		//console.log('[AlbumSlide] componentDidMount');
 	}
 
 	componentDidUpdate = (prevProps) => {
@@ -57,7 +55,8 @@ export class AlbumSlide extends Component {
 
 		const {autoplay} = this.props;
 
-		if (autoplay && prevProps.autoplay !== autoplay) {
+		if (autoplay &&
+			(prevProps.autoplay !== autoplay || this.state.interval === undefined) ) {
 			let x = window.setInterval(() => {
 				this.goToNextSlide();
 			}, 3000);
@@ -65,13 +64,24 @@ export class AlbumSlide extends Component {
 			this.setState({interval : x});
 		}
 		else if (!autoplay && prevProps.autoplay !== autoplay) {
-			let x = window.clearInterval(this.state.interval);
-			this.setState({interval : x});
+			window.clearInterval(this.state.interval);
+			this.setState({interval : undefined});
 		}
 	}
 
 	componentWillUnmount () {
+
+		const {setIndex, setTranslateValue} = this.props;
+
 		this.props.setFullScreen(false);
+
+		if (this.state.interval) {
+			window.clearInterval(this.state.interval);
+			this.setState({interval : undefined});
+		}
+
+		setTranslateValue(0);
+		setIndex(0);
 	}
 
 	onMouseMove = () => {
