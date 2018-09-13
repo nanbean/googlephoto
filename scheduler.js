@@ -4,13 +4,11 @@ var config = require('./config.js');
 var path = require('path');
 var fs = require('fs');
 
-module.exports = schedule.scheduleJob(config.checkSharedAlbumInterval, checkUpdate);
-
 async function checkUpdate(){
 	// get newest photo list
 	let token = googleapi.getToken();
 	const {result, error} = await googleapi.getSharedAlbumList(null, token);
-	// console.log('scheduler.. getSharedAlbumList:', result, '\nerror:', error);
+	// console.log('checkUpdate.. getSharedAlbumList:', result, '\nerror:', error);
 	
 	if (!error) {
 		// load cached file
@@ -32,26 +30,19 @@ async function checkUpdate(){
 						albumUpdate.id = newAlbum.id;
 						albumUpdate.title = newAlbum.title;
 						albumUpdate.updateCount = newAlbum.totalMediaItems - oldAlbum.totalMediaItems;
-						albumUpdate.newPhotoUrl = ''; // latest photo of this album
 						updateInfo.updateList.push(albumUpdate);
 					}
 				});
 			});
-			// for (var j in updateInfo.updateList) {
-			// 	var albumId = updateInfo.updateList[j].id;
-			// 	const {album, err} = await googleapi.getSearchedPhotoList({ albumId:albumId }, token);
-			// 	if (!err) {
-			// 		// console.log('album:', album);
-			// 	}
-			// }
-			// console.log('updateInfo: ', JSON.stringify(updateInfo));
 			// write update info upon result file
-			fs.writeFile(config.albumUpdateInfoPath, JSON.stringify(updateInfo), function() {});
+			//console.log('updateInfo:', JSON.stringify(updateInfo));
+			fs.writeFileSync(config.albumUpdateInfoPath, JSON.stringify(updateInfo), function() {});
 		}
-
-		
 	}
-	
-
-
 }
+
+exports.registerSchedule = (interval) => {
+	schedule.scheduleJob(interval, checkUpdate);
+};
+
+exports.checkUpdate = checkUpdate;

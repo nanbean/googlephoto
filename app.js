@@ -2,6 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var sessionFileStore = require('session-file-store');
 var path = require('path');
+var https = require('https');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const persist = require('node-persist');
@@ -27,6 +28,9 @@ var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flag
 
 // setup the logger
 app.use(logger('combined', {stream: accessLogStream}));
+
+// setup scheduler
+scheduler.registerSchedule(config.checkSharedAlbumInterval);
 
 const albumCache = persist.create({
 	dir: config.albumCachePath,
@@ -105,7 +109,7 @@ app.get(
 app.get('/photo/getAlbumList', async function (req, res) {
 	let token = googleapi.getToken();
 	if (token != undefined) {
-		const cachedAlbums = await albumCache.getItem(token);
+		const cachedAlbums = await albumCache.getItem('albumList');
 		if (cachedAlbums) {
 			res.status(200).send(cachedAlbums);
 		} else {
@@ -117,7 +121,7 @@ app.get('/photo/getAlbumList', async function (req, res) {
 				res.status(401).send('User token is not valid. Please log in again.');
 			} else {
 				res.status(200).send(result);
-				albumCache.setItem(token, result);
+				albumCache.setItem('albumList', result);
 			}
 		}
 	} else {
@@ -157,7 +161,7 @@ app.get('/photo/album/:albumId', async function (req, res) {
 app.get('/photo/getSharedAlbumList', async function (req, res) {
 	let token = googleapi.getToken();
 	if (token != undefined) {
-		const cachedSharedAlbums = await sharedAlbumCache.getItem(token);
+		const cachedSharedAlbums = await sharedAlbumCache.getItem('shareAlbumList');
 		if (cachedSharedAlbums) {
 			res.status(200).send(cachedSharedAlbums);
 		} else {
@@ -169,7 +173,7 @@ app.get('/photo/getSharedAlbumList', async function (req, res) {
 				res.status(401).send('User token is not valid. Please log in again.');
 			} else {
 				res.status(200).send(result);
-				sharedAlbumCache.setItem(token, result);
+				sharedAlbumCache.setItem('shareAlbumList', result);
 			}
 		}
 	} else {
@@ -223,24 +227,61 @@ app.get('/photo/getAlbumUpdate', function (req, res) {
 	res.status(200).send(updateInfo);
 });
 
-app.get('/push', function (req, res) {
-	webOsservice.call('luna://com.webos.notification/createToast',
-		{
-			sourceId: 'com.lge.app.viewster',
-			onclick: {
-				appId: 'com.lge.app.viewster'
-			},
-			message: 'You have new photos',
-			noaction: false,
-			persistent: true
-		},
-		(res) => {}
-	);
-	res.status(200).send({result: true});
+app.get('/push', async function (req, res) {
+	await scheduler.checkUpdate();
+
+	let albumId = '';
+	try {
+		albumId = JSON.parse(fs.readFileSync(config.albumUpdateInfoPath, 'utf-8')).updateList[0].id;
+	} catch (error) {
+		res.status(200).send({result: false, message: 'No update'});
+	}
+	const {result, error} = await googleapi.getSearchedPhotoList({albumId: albumId}, googleapi.getToken());
+	if (!error) {
+		let url = result.pictures[result.pictures.length-1].baseUrl + '=w900-h900';
+		let filename = result.pictures[result.pictures.length-1].filename;
+		let imgPath = config.persistPath + '/' + filename;
+
+		// remove cache so that server refresh the cache
+		// fs.rmdirSync(config.sharedAlbumCachePath);
+		await photoCache.removeItem(albumId);
+
+		var file = fs.createWriteStream(imgPath);
+		https.get(url, function(response) {
+			response.pipe(file);
+			file.on('finish', function() {
+				try {
+					webOsservice.call('luna://com.webos.notification/createToast',
+						{
+							sourceId: 'com.lge.app.viewster',
+							onclick: {
+								appId: 'com.lge.app.viewster',
+								params : { albumId: albumId }
+							},
+							message: 'You have new photos',
+							noaction: false,
+							persistent: true,
+							extra: {
+								images: [
+									{uri: imgPath}
+								]
+							}
+						},
+						(res) => {}
+					);
+					res.status(200).send({result: true});
+				} catch (err) {
+					res.status(200).send({result: false, message: 'Device does not support webOsservice.'});
+				}
+			});
+		});
+	} else {
+		res.status(200).send({result: false, error: error});
+	}
 });
 
 app.setService = function (service) {
 	webOsservice = service;
-}
+};
 
 module.exports = app;
