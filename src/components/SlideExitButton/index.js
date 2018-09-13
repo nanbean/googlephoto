@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
 	Button,
 	Icon
@@ -10,14 +10,18 @@ import './index.css';
 
 export class SlideExitButton extends Component {
 	render () {
-		const { id } = this.props;
+		const {id} = this.props;
 
 		return (
 			<div className="slide-exit-button">
 				<Link
 					to={`/album/${id}`}
 				>
-					<Button icon labelPosition="left">
+					<Button
+						size="massive"
+						icon
+						labelPosition="left"
+					>
 						<Icon name="stop" />
 						Exit
 					</Button>

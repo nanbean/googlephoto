@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions';
+import {handleActions} from 'redux-actions';
 
 import {
 	setAlbumId,
@@ -12,11 +12,11 @@ const initialState = {
 
 export default handleActions(
 	{
-		[setAlbumId]: (state, { payload }) => ({
+		[setAlbumId]: (state, {payload}) => ({
 			...state,
 			id: payload
 		}),
-		[setAlbumTitle]: (state, { payload }) => ({
+		[setAlbumTitle]: (state, {payload}) => ({
 			...state,
 			title: payload
 		})

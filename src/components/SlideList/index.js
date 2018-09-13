@@ -1,37 +1,29 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import Slide from '../Slide';
 
+import './index.css';
+
 export class SlideList extends Component {
 	renderSlides = () => {
-		//console.log('[SlideList] renderSlides');
-
-		const { photos } = this.props;
+		const {photos} = this.props;
 
 		if (!this.props.photos) {
 			return;
 		}
 
 		return (
-			photos.map((curr, i) => {
-				let baseUrl = photos[i].baseUrl;
-				let w = photos[i].mediaMetadata.width;
-				let h = photos[i].mediaMetadata.height;
-				let infoSize = '';
-				if (w && h) {
-					infoSize = `=w${w}-h${h}`;
-				}
-
+			photos.map((i) => {
 				return (
-					<Slide key={i} image={baseUrl.concat(infoSize)} />
+					<Slide key={i.id} image={`${i.baseUrl}=w1920-h1080`} />
 				);
 			})
 		);
 	}
 
 	render = () => {
-		const { translateValue } = this.props;
+		const {translateValue} = this.props;
 		return (
 			<div className="slider-wrapper"
 				style={{

@@ -1,10 +1,10 @@
-import { TOGGLE_SETTING } from '../actions/actionTypes';
+import {TOGGLE_SETTING} from '../actions/actionTypes';
 
 const initialState = {
 	visible: false,
 	showDots: true,
 	coolButtons: false,
-	autoplay: false
+	autoplay: true
 };
 
 export default function(state = initialState, action) {
@@ -13,7 +13,7 @@ export default function(state = initialState, action) {
 
 	switch (action.type) {
 	case TOGGLE_SETTING:
-		return { ...state, [action.payload]: !state[action.payload] };
+		return {...state, [action.payload]: !state[action.payload]};
 
 	default:
 		break;

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Loader } from 'semantic-ui-react';
+import {connect} from 'react-redux';
+import {Loader} from 'semantic-ui-react';
 
 import AlbumLists from '../components/AlbumLists';
 
@@ -9,7 +9,7 @@ import {
 	clearAlbumItems,
 	fetchGetSharedAlbumList
 } from '../actions/albumActions';
-import { fetchGetAuth } from '../actions/authActions';
+import {fetchGetAuth} from '../actions/authActions';
 
 export class SharedAlbumList extends Component {
 	componentDidMount() {
@@ -19,7 +19,7 @@ export class SharedAlbumList extends Component {
 	}
 
 	render() {
-		const { albums, fetching } = this.props;
+		const {albums, fetching} = this.props;
 
 		return (
 			<div>

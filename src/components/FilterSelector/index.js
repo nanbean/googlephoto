@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Checkbox } from 'semantic-ui-react';
+import {Checkbox} from 'semantic-ui-react';
 
 import './index.css';
 
@@ -11,7 +11,7 @@ class FilterSelector extends Component {
 	}
 
 	render () {
-		const { filter, filterList } = this.props;
+		const {filter, filterList} = this.props;
 
 		return (
 			<div className="filter-list">

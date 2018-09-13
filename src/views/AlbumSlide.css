@@ -7,32 +7,8 @@
 	white-space: nowrap;
 }
 
-.slider .slider-wrapper {
-	position: relative;
-	height:100%;
-	width:100%;
-}
-
-.slider .slider-wrapper .slide {
-	display: inline-block;
-	height: 100%;
-	width: 100%;
-}
-
 @media(max-width:650px) {
 	width: 300px;
-}
-
-.right-arrow, .left-arrow {
-	height:50px;
-	width:50px;
-	display:flex;
-	align-items: center;
-	justify-content: center;
-	background: #f9f9f9;
-	border-radius: 50%;
-	cursor: pointer;
-	transition: transform ease-in .1s;
 }
 
 .cool-buttons {

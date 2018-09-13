@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {
 	CellMeasurer,
@@ -36,8 +36,8 @@ class AlbumLists extends Component {
 		});
 	}
 
-	cellRenderer = ({ index, key, parent, style }) => {
-		const { albums } = this.props;
+	cellRenderer = ({index, key, parent, style}) => {
+		const {albums} = this.props;
 		const datum = albums[index];
 
 		return (
@@ -60,7 +60,7 @@ class AlbumLists extends Component {
 	}
 
 	render () {
-		const { albums } = this.props;
+		const {albums} = this.props;
 
 		return (
 			<div className="album-lists">
