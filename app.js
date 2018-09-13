@@ -238,7 +238,7 @@ app.get('/push', async function (req, res) {
 	}
 	const {result, error} = await googleapi.getSearchedPhotoList({albumId: albumId}, googleapi.getToken());
 	if (!error) {
-		let url = result.pictures[result.pictures.length-1].baseUrl;
+		let url = result.pictures[result.pictures.length-1].baseUrl + '=w900-h900';
 		let filename = result.pictures[result.pictures.length-1].filename;
 		let imgPath = config.persistPath + '/' + filename;
 
