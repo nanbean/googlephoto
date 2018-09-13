@@ -14,17 +14,9 @@ export class SlideList extends Component {
 		}
 
 		return (
-			photos.map((curr, i) => {
-				let baseUrl = photos[i].baseUrl;
-				let w = photos[i].mediaMetadata.width;
-				let h = photos[i].mediaMetadata.height;
-				let infoSize = '';
-				if (w && h) {
-					infoSize = `=w${w}-h${h}`;
-				}
-
+			photos.map((i) => {
 				return (
-					<Slide key={i} image={baseUrl.concat(infoSize)} />
+					<Slide key={i} image={`${i.baseUrl}=w1920-h1080`} />
 				);
 			})
 		);

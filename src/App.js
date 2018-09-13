@@ -14,6 +14,8 @@ import {
 
 import MenuBar from './components/MenuBar';
 
+import {setCursorState} from './actions/webOSActions';
+
 import './App.css';
 
 const Routing = () => (
@@ -28,6 +30,17 @@ const Routing = () => (
 );
 
 class App extends React.Component {
+	constructor (props) {
+		super(props);
+
+		if (typeof document !== 'undefined') {
+			const that = this;
+			document.addEventListener('cursorStateChange', function (oEvent) {
+				that.props.dispatch(setCursorState(oEvent.detail.visibility));
+			}, false);
+		}
+	}
+
 	render() {
 		const {auth, fullScreen} = this.props;
 

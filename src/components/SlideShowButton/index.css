@@ -1,4 +1,5 @@
 .slide-show-button {
 	position: fixed;
+	top: 130px;
 	right: 50px;
 }

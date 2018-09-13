@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import leftArrowImg from '../Img/slider-left-arrow.svg';
 
+import './index.css';
+
 const LeftArrow = ({prevSlide, coolButtons}) => {
 	return (
 		<div className={coolButtons ? 'left-arrow cool-buttons' : 'left-arrow'} onClick={prevSlide}>

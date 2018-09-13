@@ -3,6 +3,7 @@ import ui from './ui';
 import albumList from './albumList';
 import albumItems from './albumItems';
 import auth from './auth';
+import cursorState from './cursorState';
 import sharedAlbumList from './sharedAlbumList';
 import filter from './filter';
 import filteredItems from './filteredItems';
@@ -15,6 +16,7 @@ const photoFrame = combineReducers({
 	albumItems,
 	albumList,
 	auth,
+	cursorState,
 	filter,
 	filteredItems,
 	filterList,

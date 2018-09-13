@@ -30,6 +30,7 @@ import {
 } from '../actions/settingActions';
 
 import {fetchGetAlbumItems} from '../actions/albumActions';
+import {setCursorState} from '../actions/webOSActions';
 
 import './AlbumSlide.css';
 
@@ -71,6 +72,10 @@ export class AlbumSlide extends Component {
 
 	componentWillUnmount () {
 		this.props.setFullScreen(false);
+	}
+
+	onMouseMove = () => {
+		this.props.setCursorState(true);
 	}
 
 	goToPrevSlide = () => {
@@ -123,6 +128,7 @@ export class AlbumSlide extends Component {
 
 	render() {
 		const {
+			cursorState,
 			id,
 			photos,
 			index,
@@ -135,39 +141,46 @@ export class AlbumSlide extends Component {
 		} = this.props;
 
 		return (
-			<div className="slider">
-				<SlideSettings
-					autoplay={autoplay}
-					showDots={showDots}
-					toggleSetting={toggleSetting}
-					visible={settingVisible}
-				/>
-				<ToggleSettings
-					visible={settingVisible}
-					toggleSetting={toggleSetting}
-				/>
-
+			<div
+				className="slider"
+				onMouseMove={this.onMouseMove}
+			>
 				<SlideList
 					photos={photos}
 					translateValue={translateValue}
 				/>
 
-				<Dots
-					visible={showDots}
-					index={index}
-					images={photos}
-					dotClick={this.handleDotClick}
-				/>
-				<LeftArrow
-					prevSlide={this.goToPrevSlide}
-					coolButtons={coolButtons}
-				/>
-				<RightArrow
-					nextSlide={this.goToNextSlide}
-					coolButtons={coolButtons}
-				/>
-
-				<SlideExitButton id={id} />
+				<div
+					style={cursorState ? {} : {display: 'none'}}
+				>
+					<SlideSettings
+						autoplay={autoplay}
+						showDots={showDots}
+						toggleSetting={toggleSetting}
+						visible={settingVisible}
+					/>
+					<ToggleSettings
+						visible={settingVisible}
+						toggleSetting={toggleSetting}
+					/>
+					<Dots
+						visible={showDots}
+						index={index}
+						images={photos}
+						dotClick={this.handleDotClick}
+					/>
+					<LeftArrow
+						prevSlide={this.goToPrevSlide}
+						coolButtons={coolButtons}
+					/>
+					<RightArrow
+						nextSlide={this.goToNextSlide}
+						coolButtons={coolButtons}
+					/>
+					<SlideExitButton
+						id={id}
+					/>
+				</div>
 			</div>
 		);
 	}
@@ -177,6 +190,7 @@ AlbumSlide.propTypes = {
 	albums:PropTypes.array.isRequired,
 	autoplay:PropTypes.bool.isRequired,
 	coolButtons: PropTypes.bool.isRequired,
+	cursorState: PropTypes.bool.isRequired,
 	fetchGetAlbumItems: PropTypes.func.isRequired,
 	id: PropTypes.string.isRequired,
 	index: PropTypes.number.isRequired,
@@ -188,6 +202,7 @@ AlbumSlide.propTypes = {
 	photos: PropTypes.array.isRequired,
 	setAlbumId: PropTypes.func.isRequired,
 	setAlbumTitle: PropTypes.func.isRequired,
+	setCursorState: PropTypes.func.isRequired,
 	setFullScreen: PropTypes.func.isRequired,
 	setIndex: PropTypes.func.isRequired,
 	settingVisible: PropTypes.bool.isRequired,
@@ -203,6 +218,7 @@ const mapStateToProps = ( state ) => {
 
 	return {
 		albums: state.albumList.albums,
+		cursorState: state.cursorState,
 		photos: state.albumItems.photos,
 		id: state.ui.album.id,
 		index: state.albumSlide.index,
@@ -218,25 +234,24 @@ const mapDispatchToProps = dispatch => ({
 	fetchGetAlbumItems(params) {
 		dispatch(fetchGetAlbumItems(params));
 	},
-
 	setAlbumId(params) {
 		dispatch(setAlbumId(params));
 	},
 	setAlbumTitle(params) {
 		dispatch(setAlbumTitle(params));
 	},
+	setCursorState: (params) => {
+		dispatch(setCursorState(params));
+	},
 	setFullScreen(params) {
 		dispatch(setFullScreen(params));
 	},
-
 	setTranslateValue: (params) => {
 		dispatch(setTranslateValue(params));
 	},
-
 	setIndex: (params) => {
 		dispatch(setIndex(params));
 	},
-
 	toggleSetting: (params) => {
 		dispatch(toggleSetting(params));
 	}
