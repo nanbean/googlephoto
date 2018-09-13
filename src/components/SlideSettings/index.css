@@ -1,0 +1,10 @@
+.slide-setting {
+	position: fixed;
+	top: 70px;
+	right: 20px;
+	z-index: 3;
+}
+
+.slide-setting .item {
+	margin: 10px;
+}

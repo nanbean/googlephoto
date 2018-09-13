@@ -8,7 +8,8 @@ import {
 	Album,
 	AlbumList,
 	Filter,
-	SharedAlbumList
+	SharedAlbumList,
+	AlbumSlide
 } from './views';
 
 import MenuBar from './components/MenuBar';
@@ -20,6 +21,7 @@ const Routing = () => (
 		<Route exact path="/albumlist" component={AlbumList} />
 		<Route exact path="/filter" component={Filter} />
 		<Route exact path="/sharedalbumlist" component={SharedAlbumList} />
+		<Route exact path="/albumslide/:id" component={AlbumSlide} />
 		<Route path="/album/:id" component={Album} />
 		<Redirect from="/" to="/albumlist"/>
 	</Switch>
@@ -27,13 +29,13 @@ const Routing = () => (
 
 class App extends React.Component {
 	render() {
-		const { auth, match } = this.props;
+		const { auth, fullScreen } = this.props;
 
 		return (
 			<div className="App">
 				<MenuBar
 					auth={auth}
-					match={match}
+					visible={!fullScreen}
 				/>
 				<Routing />
 			</div>
@@ -43,13 +45,12 @@ class App extends React.Component {
 
 App.propTypes = {
 	auth: PropTypes.bool.isRequired,
-	match: PropTypes.shape({
-		url: PropTypes.string.isRequired
-	})
+	fullScreen: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-	auth: state.auth
+	auth: state.auth,
+	fullScreen: state.ui.fullScreen
 });
 
 export default withRouter(connect(

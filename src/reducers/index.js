@@ -7,6 +7,8 @@ import sharedAlbumList from './sharedAlbumList';
 import filter from './filter';
 import filteredItems from './filteredItems';
 import filterList from './filterList';
+import albumSlide from './albumSlide';
+import slideSettings from './slideSettings';
 
 const photoFrame = combineReducers({
 	ui,
@@ -16,7 +18,9 @@ const photoFrame = combineReducers({
 	filter,
 	filteredItems,
 	filterList,
-	sharedAlbumList
+	sharedAlbumList,
+	albumSlide,
+	slideSettings
 });
 
 export default photoFrame;
