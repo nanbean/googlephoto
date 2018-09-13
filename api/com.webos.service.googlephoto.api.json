@@ -1,0 +1,12 @@
+{
+	"activities.callbacks": [
+		"com.webos.service.googlephoto/start"
+	],
+	"configurator.callbacks": [
+		"com.webos.service.googlephoto/start"
+	],
+	"googlephoto": [
+		"com.webos.service.googlephoto/start",
+		"com.webos.service.googlephoto/stop"
+	]
+}
