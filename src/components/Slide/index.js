@@ -1,20 +1,26 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-const Slide = ({ image }) => {
-	const styles = {
-		backgroundImage: `url(${image})`,
-		backgroundSize: 'cover',
-		backgroundRepeat: 'no-repeat',
-		backgroundPosition: '50% 60%'
-	};
-	return (
-		<div className="slide" style={styles}></div>
-	);
-};
+import './index.css';
+
+class Slide extends Component {
+	render () {
+		const {image} = this.props;
+
+		return (
+			<div
+				className="slide-item"
+				style={{backgroundImage: `url(${image})`}}
+			>
+			</div>
+		);
+	}
+}
 
 Slide.propTypes = {
-	image: PropTypes.string.isRequired
+	height: PropTypes.string.isRequired,
+	image: PropTypes.string.isRequired,
+	width: PropTypes.string.isRequired
 };
 
 export default Slide;

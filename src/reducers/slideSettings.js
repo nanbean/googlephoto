@@ -1,4 +1,4 @@
-import { TOGGLE_SETTING } from '../actions/actionTypes';
+import {TOGGLE_SETTING} from '../actions/actionTypes';
 
 const initialState = {
 	visible: false,
@@ -13,7 +13,7 @@ export default function(state = initialState, action) {
 
 	switch (action.type) {
 	case TOGGLE_SETTING:
-		return { ...state, [action.payload]: !state[action.payload] };
+		return {...state, [action.payload]: !state[action.payload]};
 
 	default:
 		break;

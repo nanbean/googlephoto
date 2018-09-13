@@ -1,7 +1,7 @@
 import React from 'react';
 import {configure, mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { BrowserRouter } from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import MenuBar from '../MenuBar';
 
 configure({adapter: new Adapter()});
@@ -11,6 +11,7 @@ describe('MenuBar Test Cases', () => {
 		<BrowserRouter>
 			<MenuBar
 				auth={true}
+				visible={true}
 			/>
 		</BrowserRouter>
 	);
@@ -28,9 +29,22 @@ describe('MenuBar Test Cases', () => {
 			<BrowserRouter>
 				<MenuBar
 					auth={false}
+					visible={true}
 				/>
 			</BrowserRouter>
 		);
 		expect(component2.find('MenuItem')).toHaveLength(4);
+	});
+
+	it('should not render items when visible is false', () => {
+		const component2 = mount(
+			<BrowserRouter>
+				<MenuBar
+					auth={false}
+					visible={false}
+				/>
+			</BrowserRouter>
+		);
+		expect(component2.find('MenuItem')).toHaveLength(0);
 	});
 });

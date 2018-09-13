@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 
 import './index.css';
 
 export class AlbumItem extends Component {
 	handleClick = () => {
-		const { id } = this.props;
+		const {id} = this.props;
 
 		this.props.history.push(`/album/${id}`);
 	}
 
 	render () {
-		const { coverPhotoBaseUrl, title } = this.props;
+		const {coverPhotoBaseUrl, title} = this.props;
 
 		return (
 			<div className="album-item">

@@ -71,6 +71,10 @@ module.exports = {
 		"keyword-spacing": [
 			"warn"
 		],
+		"object-curly-spacing": [
+			"warn",
+			"never"
+		],
 		"react/default-props-match-prop-types": [
 			"warn"
 		],

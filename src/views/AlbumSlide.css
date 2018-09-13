@@ -7,18 +7,6 @@
 	white-space: nowrap;
 }
 
-.slider .slider-wrapper {
-	position: relative;
-	height:100%;
-	width:100%;
-}
-
-.slider .slider-wrapper .slide {
-	display: inline-block;
-	height: 100%;
-	width: 100%;
-}
-
 @media(max-width:650px) {
 	width: 300px;
 }

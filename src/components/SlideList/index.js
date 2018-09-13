@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import Slide from '../Slide';
 
+import './index.css';
+
 export class SlideList extends Component {
 	renderSlides = () => {
-		//console.log('[SlideList] renderSlides');
-
-		const { photos } = this.props;
+		const {photos} = this.props;
 
 		if (!this.props.photos) {
 			return;
@@ -31,7 +31,7 @@ export class SlideList extends Component {
 	}
 
 	render = () => {
-		const { translateValue } = this.props;
+		const {translateValue} = this.props;
 		return (
 			<div className="slider-wrapper"
 				style={{

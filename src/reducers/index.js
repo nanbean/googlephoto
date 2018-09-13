@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import ui from './ui';
 import albumList from './albumList';
 import albumItems from './albumItems';

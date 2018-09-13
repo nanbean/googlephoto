@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
+import {Switch, Route, Redirect} from 'react-router-dom';
 
 import {
 	Album,
@@ -29,7 +29,7 @@ const Routing = () => (
 
 class App extends React.Component {
 	render() {
-		const { auth, fullScreen } = this.props;
+		const {auth, fullScreen} = this.props;
 
 		return (
 			<div className="App">

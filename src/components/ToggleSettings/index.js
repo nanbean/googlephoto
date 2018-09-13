@@ -7,7 +7,7 @@ import {
 
 import './index.css';
 
-const ToggleSettings = ({ visible, toggleSetting }) => (
+const ToggleSettings = ({visible, toggleSetting}) => (
 	<div className="slide-setting-button">
 		<Button
 			icon={visible ? 'close' : 'setting'}

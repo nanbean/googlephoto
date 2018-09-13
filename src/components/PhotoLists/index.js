@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {
 	CellMeasurer,
@@ -28,8 +28,8 @@ const cellPositioner = createMasonryCellPositioner({
 	spacer: 10
 });
 
-const MasonryComponent = ({ photos }) => {
-	function cellRenderer({ index, key, parent, style }) {
+const MasonryComponent = ({photos}) => {
+	function cellRenderer({index, key, parent, style}) {
 		const item = photos[index];
 		const {mediaMetadata} = item;
 		const height = mediaMetadata && columnWidth * (mediaMetadata.height / mediaMetadata.width) || defaultHeight;
@@ -82,8 +82,8 @@ class PhotoLists extends Component {
 		});
 	}
 
-	cellRenderer = ({ index, key, parent, style }) => {
-		const { photos } = this.props;
+	cellRenderer = ({index, key, parent, style}) => {
+		const {photos} = this.props;
 		const datum = photos[index];
 
 		return (
@@ -108,7 +108,7 @@ class PhotoLists extends Component {
 	}
 
 	render () {
-		const { photos } = this.props;
+		const {photos} = this.props;
 
 		if (photos && photos.length === 0) {
 			cache.clearAll();

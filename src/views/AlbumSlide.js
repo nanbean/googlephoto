@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import SlideSettings from '../components/SlideSettings';
 
@@ -29,7 +29,7 @@ import {
 	toggleSetting
 } from '../actions/settingActions';
 
-import { fetchGetAlbumItems } from '../actions/albumActions';
+import {fetchGetAlbumItems} from '../actions/albumActions';
 
 import './AlbumSlide.css';
 
@@ -37,7 +37,7 @@ export class AlbumSlide extends Component {
 	state = {}
 
 	componentDidMount() {
-		const { albums, match } = this.props;
+		const {albums, match} = this.props;
 		const id = match && match.params && match.params.id;
 		const album = albums && albums.find(i => i.id === id);
 		const title = album && album.title;
@@ -54,18 +54,18 @@ export class AlbumSlide extends Component {
 
 		//console.log('[AlbumSlide] componentdidUpdate');
 
-		const { autoplay } = this.props;
+		const {autoplay} = this.props;
 
 		if (autoplay && prevProps.autoplay !== autoplay) {
 			let x = window.setInterval(() => {
 				this.goToNextSlide();
 			}, 3000);
 
-			this.setState({ interval : x });
+			this.setState({interval : x});
 		}
 		else if (!autoplay && prevProps.autoplay !== autoplay) {
 			let x = window.clearInterval(this.state.interval);
-			this.setState({ interval : x });
+			this.setState({interval : x});
 		}
 	}
 
@@ -76,7 +76,7 @@ export class AlbumSlide extends Component {
 	goToPrevSlide = () => {
 		//console.log('[AlbumSlide] goToPrevSlide called');
 
-		const { index, translateValue, setIndex, setTranslateValue } = this.props;
+		const {index, translateValue, setIndex, setTranslateValue} = this.props;
 
 		if (index === 0) return;
 
@@ -87,7 +87,7 @@ export class AlbumSlide extends Component {
 	goToNextSlide = () => {
 		//console.log('[AlbumSlide] goToNextSlide called');
 
-		const { photos, index, translateValue, setIndex, setTranslateValue } = this.props;
+		const {photos, index, translateValue, setIndex, setTranslateValue} = this.props;
 		if (index === photos.length - 1) {
 			setTranslateValue(0);
 			return setIndex(0);
@@ -98,7 +98,7 @@ export class AlbumSlide extends Component {
 	}
 
 	getSlideWidth = () => {
-		let dom = document.querySelector('.slide');
+		let dom = document.querySelector('.slide-item');
 
 		if (!dom)
 			return 0;
@@ -108,7 +108,7 @@ export class AlbumSlide extends Component {
 	}
 
 	handleDotClick = (i) => {
-		const { index, translateValue, setIndex, setTranslateValue } = this.props;
+		const {index, translateValue, setIndex, setTranslateValue} = this.props;
 		if (i === index) return;
 
 		if (i > index) {

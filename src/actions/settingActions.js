@@ -1,4 +1,4 @@
-import { TOGGLE_SETTING } from './actionTypes';
+import {TOGGLE_SETTING} from './actionTypes';
 
 export function toggleSetting(settingName) {
 	return ({
