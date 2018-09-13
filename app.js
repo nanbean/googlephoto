@@ -1,14 +1,18 @@
 var express = require('express');
 var session = require('express-session');
 var sessionFileStore = require('session-file-store');
-var request = require('request-promise');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const persist = require('node-persist');
 
+const googleapi = require('./googleapi.js');
+const scheduler = require('./scheduler.js');
+
 const config = require('./config.js');
 const fs = require('fs');
+
+var webOsservice;
 
 var app = express();
 var fileStore = sessionFileStore(session);
@@ -19,25 +23,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, '../log/access.log'), {flags: 'a'});
- 
+var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flags: 'a'});
+
 // setup the logger
 app.use(logger('combined', {stream: accessLogStream}));
 
 const albumCache = persist.create({
-	dir: 'persist-albumcache/',
+	dir: config.albumCachePath,
 	ttl: config.albumCacheTtl
 });
 albumCache.init();
 
 const photoCache = persist.create({
-	dir: 'persist-photocache/',
+	dir: config.photoCachePath,
 	ttl: config.photoCacheTtl
 });
 photoCache.init();
 
 const sharedAlbumCache = persist.create({
-	dir: 'persist-sharedAlbumcache/',
+	dir: config.sharedAlbumCachePath,
 	ttl: config.albumCacheTtl
 });
 sharedAlbumCache.init();
@@ -45,7 +49,7 @@ sharedAlbumCache.init();
 const sessionMiddleware = session({
 	resave: false,
 	saveUninitialized: true,
-	store: new fileStore({}),
+	store: new fileStore({path: config.sessionPath}),
 	secret: 'connected google photo'
 });
 
@@ -99,18 +103,18 @@ app.get(
 
 // Returns all albums owned by the user.
 app.get('/photo/getAlbumList', async function (req, res) {
-	let token = getToken();
+	let token = googleapi.getToken();
 	if (token != undefined) {
 		const cachedAlbums = await albumCache.getItem(token);
 		if (cachedAlbums) {
 			res.status(200).send(cachedAlbums);
 		} else {
-			const {result, error} = await getAlbumList(req, token);	
+			const {result, error} = await googleapi.getAlbumList(req, token);
 			if (error) {
 				fs.writeFile(config.tokenPath, '');
 				req.logout();
 				req.session.destroy();
-				res.status(401).send('User token is not valid');
+				res.status(401).send('User token is not valid. Please log in again.');
 			} else {
 				res.status(200).send(result);
 				albumCache.setItem(token, result);
@@ -127,15 +131,22 @@ app.get('/photo/album/:albumId', async function (req, res) {
 		albumId: req.params.albumId,
 		pageSize: config.searchPageSize
 	};
-	let token = getToken();
+	let token = googleapi.getToken();
 	if (token != undefined) {
 		const cachedPhotos = await photoCache.getItem(parameters.albumId);
 		if (cachedPhotos) {
 			res.status(200).send(cachedPhotos);
 		} else {
-			const {result} = await getSearchedPhotoList(parameters, token);
-			res.status(200).send(result);
-			photoCache.setItem(parameters.albumId, result);
+			const {result, error} = await googleapi.getSearchedPhotoList(parameters, token);
+			if (error) {
+				fs.writeFile(config.tokenPath, '');
+				req.logout();
+				req.session.destroy();
+				res.status(401).send('User token is not valid. Please log in again.');
+			} else {
+				res.status(200).send(result);
+				photoCache.setItem(parameters.albumId, result);
+			}
 		}
 	} else {
 		res.status(401).send('User not logged in.');
@@ -144,18 +155,18 @@ app.get('/photo/album/:albumId', async function (req, res) {
 
 // Lists all shared albums available in the Sharing tab of the user's Google Photos app.
 app.get('/photo/getSharedAlbumList', async function (req, res) {
-	let token = getToken();
+	let token = googleapi.getToken();
 	if (token != undefined) {
 		const cachedSharedAlbums = await sharedAlbumCache.getItem(token);
 		if (cachedSharedAlbums) {
 			res.status(200).send(cachedSharedAlbums);
 		} else {
-			const {result, error} = await getSharedAlbumList(req, token);
+			const {result, error} = await googleapi.getSharedAlbumList(req, token);
 			if (error) {
 				fs.writeFile(config.tokenPath, '');
 				req.logout();
 				req.session.destroy();
-				res.status(401).send('User token is not valid');
+				res.status(401).send('User token is not valid. Please log in again.');
 			} else {
 				res.status(200).send(result);
 				sharedAlbumCache.setItem(token, result);
@@ -169,18 +180,17 @@ app.get('/photo/getSharedAlbumList', async function (req, res) {
 // Returns filtered pictures from selected album.
 app.post('/photo/search', async function (req, res) {
 	let parameters = {
-		albumId: req.body.albumId,
 		pageSize: config.searchPageSize,
 		filters: {contentFilter: {includedContentCategories:req.body.filters}}
 	};
-	let token = getToken();
+	let token = googleapi.getToken();
 	let cacheKey = 'FILTERS:' + req.body.filters.toString();
 	if (token != undefined) {
 		const cachedPhotos = await photoCache.getItem(cacheKey);
 		if (cachedPhotos) {
 			res.status(200).send(cachedPhotos);
 		} else {
-			const {result} = await getSearchedPhotoList(parameters, token);
+			const {result} = await googleapi.getSearchedPhotoList(parameters, token);
 			res.status(200).send(result);
 			photoCache.setItem(cacheKey, result);
 		}
@@ -192,7 +202,7 @@ app.post('/photo/search', async function (req, res) {
 // Returns if user logged in.
 app.get('/getAuth', function (req, res) {
 	try {
-		if (!getToken()) {
+		if (!googleapi.getToken()) {
 			res.status(200).send(JSON.stringify({auth: false}));
 		} else {
 			res.status(200).send(JSON.stringify({auth: true}));
@@ -207,110 +217,30 @@ app.get('/photo/getFilterList', function (req, res) {
 	res.status(200).send(JSON.stringify({filterList:config.filterList}));
 });
 
-var getToken = function () {
-	let token = '';
-	try {
-		token = fs.readFileSync(config.tokenPath, 'utf-8');
-	} catch (err) {
-		return null;
-	}
-	return token;
-};
+// Returns updated album information.
+app.get('/photo/getAlbumUpdate', function (req, res) {
+	let updateInfo = fs.readFileSync(config.albumUpdateInfoPath, 'utf-8');
+	res.status(200).send(updateInfo);
+});
 
-async function getAlbumList (req, token) {
-	let parameters = {pageSize: config.albumPageSize};
-	let result = {albums: []};
-	let error = null;
+app.get('/push', function (req, res) {
+	webOsservice.call('luna://com.webos.notification/createToast',
+		{
+			sourceId: 'com.lge.app.viewster',
+			onclick: {
+				appId: 'com.lge.app.viewster'
+			},
+			message: 'You have new photos',
+			noaction: false,
+			persistent: true
+		},
+		(res) => {}
+	);
+	res.status(200).send({result: true});
+});
 
-	try {
-		do {
-			const body = await request.get(config.apiEndpoint + '/v1/albums', {
-				headers: {'Content-Type': 'application/json'},
-				qs: parameters,
-				json: true,
-				auth: {'bearer': token}
-			});
-			//console.log('body: ', body);
-			body.albums.forEach((element) => {
-				let album = {
-					id: element.id,
-					title: element.title,
-					totalMediaItems: Number(element.mediaItemsCount),	//string -> number
-					coverPhotoBaseUrl: element.coverPhotoBaseUrl
-				};
-				result.albums.push(album);
-			});
-			parameters.pageToken = body.nextPageToken;
-		} while (parameters.pageToken != null);
-	} catch (err) {
-		error = new Error('getAlbumList error', err);
-	}
-
-	return {result, error};
-}
-
-async function getSharedAlbumList (req, token) {
-	let parameters = {pageSize: config.albumPageSize};
-	let result = {sharedAlbums: []};
-	let error = null;
-
-	try {
-		do {
-			const body = await request.get(config.apiEndpoint + '/v1/sharedAlbums', {
-				headers: {'Content-Type': 'application/json'},
-				qs: parameters,
-				json: true,
-				auth: {'bearer': token}
-			});
-			body.sharedAlbums.forEach((element) => {
-				if (element.title) {
-					let album = { 
-						id: element.id,
-						title: element.title,
-						totalMediaItems: Number(element.mediaItemsCount),	//string -> number
-						coverPhotoBaseUrl: element.coverPhotoBaseUrl
-					};
-					result.sharedAlbums.push(album);
-				}
-			});
-			parameters.pageToken = body.nextPageToken;
-		} while (parameters.pageToken != null);
-	} catch (err) {
-		error = new Error('getSharedAlbumList error', err);
-	}
-	return {result, error};
-}
-
-async function getSearchedPhotoList(parameters, token) {
-	let result = {pictures:[]};
-	let error = null;
-
-	try {
-		do {
-			const body = await request.post(config.apiEndpoint + '/v1/mediaItems:search', {
-				headers: {'Content-Type': 'application/json'},
-				body: parameters,
-				json: true,
-				auth: {'bearer': token}
-			});
-
-			body.mediaItems.forEach((element) => {
-				if (element.mimeType && element.mimeType.startsWith('image/')) {
-					let picture = {
-						id: element.id,
-						baseUrl: element.baseUrl,
-						mediaMetadata: element.mediaMetadata,
-						mimeType: element.mimeType
-					};
-					result.pictures.push(picture);
-				}
-			});
-			parameters.pageToken = body.nextPageToken;
-		} while (parameters.pageToken != null);
-	} catch (err) {
-		error = new Error('getSearchedPhotoList error', err);
-	}
-	return {result, error};
+app.setService = function (service) {
+	webOsservice = service;
 }
 
 module.exports = app;

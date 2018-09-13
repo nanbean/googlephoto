@@ -9,6 +9,21 @@ config.oAuthclientSecret = 'your client secret';
 // The port where the app should listen for requests.
 config.port = 8090;
 
+// Cache file path
+config.persistPath = '/var/tmp';
+config.albumCachePath = config.persistPath + '/persist-albumcache/';
+config.photoCachePath = config.persistPath + '/persist-photocache/';
+config.sharedAlbumCachePath = config.persistPath + '/persist-sharedAlbumcache/';
+
+// Path of Google login session
+config.sessionPath = config.persistPath + '/sessions';
+
+// Log file path
+config.logPath = config.persistPath;
+
+// Album udpate information path
+config.albumUpdateInfoPath = config.persistPath + '/updateInfo.json';
+
 // The callback to use for OAuth requests. This is the URL where the app is
 // running. For testing and running it locally, use 127.0.0.1.
 config.oAuthCallbackUrl = 'http://127.0.0.1:' + config.port + '/auth/google/callback';
@@ -33,17 +48,21 @@ config.albumPageSize = 50;
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';
 
 // Google user login token saved file.
-config.tokenPath = './sessions/token';
+config.tokenPath = config.sessionPath + '/token';
 
 // TTL value of album list cache(ex. 600000 equals 10 minutes)
-config.albumCacheTtl = 1800000;
+config.albumCacheTtl = 3600000;
 
 // TTL value of photo list cache
-config.photoCacheTtl = 1800000;
+config.photoCacheTtl = 3600000;
 
 // AI filter list
 config.filterList = ['NONE', 'LANDSCAPES', 'RECEIPTS', 'CITYSCAPES', 'LANDMARKS',
 	'SELFIES','PEOPLE','PETS','WEDDINGS','BIRTHDAYS','DOCUMENTS','TRAVEL','ANIMALS',
 	'FOOD','SPORT','NIGHT','PERFORMANCES','WHITEBOARDS','SCREENSHOTS','UTILITY'];
+
+// Interval of checking recent shared album information
+// https://www.npmjs.com/package/node-schedule#cron-style-scheduling
+config.checkSharedAlbumInterval = '0,30 * * * * *';
 
 module.exports = config;
