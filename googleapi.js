@@ -93,7 +93,7 @@ exports.getSearchedPhotoList = async function (parameters, token) {
 				if (element.mimeType && element.mimeType.startsWith('image/')) {
 					let picture = {
 						id: element.id,
-						baseUrl: element.baseUrl + '=w3840-h2160',
+						baseUrl: element.baseUrl,
 						mediaMetadata: element.mediaMetadata,
 						mimeType: element.mimeType
 					};
