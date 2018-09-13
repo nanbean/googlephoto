@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.webos.service.googlephoto
+Exec=/usr/bin/run-js-service -u -g -n /usr/palm/services/com.webos.service.googlephoto --max_new_space_size=4096 --disable-timeouts
+Type=dynamic

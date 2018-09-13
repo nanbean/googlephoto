@@ -1,0 +1,25 @@
+{
+    "activity" : {
+        "name" : "com.webos.service.googlephoto.wired.start",
+        "description" : "Initialize googlephoto service when wired state is enabled",
+        "trigger" : {
+            "method" : "luna://com.webos.service.connectionmanager/getstatus",
+                   "where" : {
+                        "prop" : ["wired", "onInternet"],
+                        "op" : "=",
+                        "val" : "yes"
+                   },
+
+            "params" : {"subscribe":true}
+         },
+        "callback" : {
+            "method" : "luna://com.webos.service.googlephoto/start"
+        },
+        "type" : {
+            "foreground" : true,
+            "explicit" : true
+        }
+    },
+    "replace" : true,
+    "start" : true
+}
