@@ -1,0 +1,11 @@
+{
+	"exeName": "js",
+	"allowedNames": ["com.webos.service.googlephoto"],
+	"type": "regular",
+	"permissions": [
+		{
+			"service": "com.webos.service.googlephoto",
+			"outbound": ["*"]
+		}
+	]
+}

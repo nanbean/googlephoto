@@ -1,0 +1,25 @@
+{
+    "activity" : {
+        "name" : "com.webos.service.googlephoto.wifi.start",
+        "description" : "Initialize googlephoto service when wifi state is enabled",
+        "trigger" : {
+            "method" : "luna://com.webos.service.connectionmanager/getstatus",
+                   "where" : {
+                        "prop" : ["wifi", "onInternet"],
+                        "op" : "=",
+                        "val" : "yes"
+                   },
+
+            "params" : {"subscribe":true}
+         },
+        "callback" : {
+            "method" : "luna://com.webos.service.googlephoto/start"
+        },
+        "type" : {
+            "foreground" : true,
+            "explicit" : true
+        }
+    },
+    "replace" : true,
+    "start" : true
+}
