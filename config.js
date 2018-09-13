@@ -63,6 +63,6 @@ config.filterList = ['NONE', 'LANDSCAPES', 'RECEIPTS', 'CITYSCAPES', 'LANDMARKS'
 
 // Interval of checking recent shared album information
 // https://www.npmjs.com/package/node-schedule#cron-style-scheduling
-config.checkSharedAlbumInterval = '0,30 * * * * *';
+config.checkSharedAlbumInterval = '*/20 * * * *';
 
 module.exports = config;

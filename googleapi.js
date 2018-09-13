@@ -88,14 +88,15 @@ exports.getSearchedPhotoList = async function (parameters, token) {
 				json: true,
 				auth: {'bearer': token}
 			});
-
+			
 			body.mediaItems.forEach((element) => {
 				if (element.mimeType && element.mimeType.startsWith('image/')) {
 					let picture = {
 						id: element.id,
 						baseUrl: element.baseUrl,
 						mediaMetadata: element.mediaMetadata,
-						mimeType: element.mimeType
+						mimeType: element.mimeType,
+						filename: element.filename
 					};
 					result.pictures.push(picture);
 				}
@@ -103,7 +104,13 @@ exports.getSearchedPhotoList = async function (parameters, token) {
 			parameters.pageToken = body.nextPageToken;
 		} while (parameters.pageToken != null);
 	} catch (err) {
-		error = new Error(err.error.error.message);
+		if (err.message) {
+			error = new Error(err.message);
+		} else if (err.error) {
+			error = new Error(err.error.error.message);
+		} else {
+			error = new Error(err);
+		}
 	}
 	return {result, error};
 };
