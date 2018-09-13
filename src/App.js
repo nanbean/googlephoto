@@ -38,6 +38,18 @@ class App extends React.Component {
 			document.addEventListener('cursorStateChange', function (oEvent) {
 				that.props.dispatch(setCursorState(oEvent.detail.visibility));
 			}, false);
+
+			document.addEventListener('webOSRelaunch', function (oEvent) {
+				that.setPath(oEvent.detail);
+			}, false);
+		}
+	}
+
+	setPath = (param) => {
+		let launchParams = param || {};
+
+		if (launchParams.albumId) {
+			this.props.history.push(`/albumslide/${launchParams.albumId}`);
 		}
 	}
 
@@ -58,7 +70,10 @@ class App extends React.Component {
 
 App.propTypes = {
 	auth: PropTypes.bool.isRequired,
-	fullScreen: PropTypes.bool.isRequired
+	fullScreen: PropTypes.bool.isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired
 };
 
 const mapStateToProps = state => ({

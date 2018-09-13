@@ -4,7 +4,7 @@ const initialState = {
 	visible: false,
 	showDots: true,
 	coolButtons: false,
-	autoplay: false
+	autoplay: true
 };
 
 export default function(state = initialState, action) {
