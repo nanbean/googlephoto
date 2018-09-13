@@ -6,7 +6,8 @@ import {
 } from '../../actions/ui/album';
 
 const initialState = {
-	id: ''
+	id: '',
+	title: 'None'
 };
 
 export default handleActions(
