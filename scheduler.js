@@ -1,5 +1,6 @@
 var schedule = require('node-schedule');
 var googleapi = require('./googleapi.js');
+var auth = require('./auth.js');
 var config = require('./config.js');
 var path = require('path');
 var fs = require('fs');
@@ -41,8 +42,13 @@ async function checkUpdate(){
 	}
 }
 
-exports.registerSchedule = (interval) => {
-	schedule.scheduleJob(interval, checkUpdate);
+async function refreshToken() {
+	auth.refresh();
+}
+
+exports.registerSchedule = (interval, next) => {
+	schedule.scheduleJob(interval, next);
 };
 
 exports.checkUpdate = checkUpdate;
+exports.refreshToken = refreshToken;

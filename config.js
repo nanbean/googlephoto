@@ -50,6 +50,9 @@ config.apiEndpoint = 'https://photoslibrary.googleapis.com';
 // Google user login token saved file.
 config.tokenPath = config.sessionPath + '/token';
 
+// Refresh token file.
+config.refreshTokenPath = config.sessionPath + '/refreshToken';
+
 // TTL value of album list cache(ex. 600000 equals 10 minutes)
 config.albumCacheTtl = 3600000;
 
@@ -64,5 +67,6 @@ config.filterList = ['NONE', 'LANDSCAPES', 'RECEIPTS', 'CITYSCAPES', 'LANDMARKS'
 // Interval of checking recent shared album information
 // https://www.npmjs.com/package/node-schedule#cron-style-scheduling
 config.checkSharedAlbumInterval = '*/20 * * * *';
+config.refreshTokenInterval = '*/30 * * * *';
 
 module.exports = config;
