@@ -229,8 +229,12 @@ app.get('/photo/getAlbumUpdate', function (req, res) {
 });
 
 app.get('/push', async function (req, res) {
-	await scheduler.checkUpdate();
-
+	try {
+		await scheduler.checkUpdate();
+	} catch (error) {
+		res.status(200).send({result: false, message: error.message});
+	}
+	
 	let albumId = '';
 	try {
 		albumId = JSON.parse(fs.readFileSync(config.albumUpdateInfoPath, 'utf-8')).updateList[0].id;
@@ -257,7 +261,7 @@ app.get('/push', async function (req, res) {
 							sourceId: 'com.lge.app.viewster',
 							onclick: {
 								appId: 'com.lge.app.viewster',
-								params : { albumId: albumId }
+								params : {albumId: albumId}
 							},
 							message: 'You have new photos',
 							noaction: false,
@@ -284,5 +288,21 @@ app.get('/push', async function (req, res) {
 app.setService = function (service) {
 	webOsservice = service;
 };
+
+// refresh album list and shared album list
+var refreshAlbumList = async function() {
+	// var date = new Date();
+	// console.log(date + ' refreshAlbumList()');
+	let token = googleapi.getToken();
+	const {result, error} = await googleapi.getAlbumList(null, token);
+	if (!error) {
+		albumCache.setItem('albumList', result);
+	}
+	const {res, err} = await googleapi.getSharedAlbumList(null, token);
+	if (!err) {
+		sharedAlbumCache.setItem('shareAlbumList', res);
+	}
+};
+scheduler.registerSchedule(config.refreshAlbumListInterval, refreshAlbumList);
 
 module.exports = app;

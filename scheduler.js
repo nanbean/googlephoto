@@ -21,6 +21,9 @@ async function checkUpdate(){
 		for (var i in cachedFileList) {
 			let cacheData = JSON.parse(fs.readFileSync(path.join(cachePath, cachedFileList[i]), 'utf-8'));
 			// console.log('cacheData:', cacheData);
+			if (!cacheData) {
+				throw new Error('cached shared album list data not found');
+			}
 			let updateInfo = {updateList: []};
 			
 			newData.sharedAlbums.forEach((newAlbum) => {
@@ -37,7 +40,7 @@ async function checkUpdate(){
 			});
 			// write update info upon result file
 			//console.log('updateInfo:', JSON.stringify(updateInfo));
-			fs.writeFileSync(config.albumUpdateInfoPath, JSON.stringify(updateInfo), function() {});
+			fs.writeFileSync(config.albumUpdateInfoPath, JSON.stringify(updateInfo), 'utf-8');
 		}
 	}
 }
