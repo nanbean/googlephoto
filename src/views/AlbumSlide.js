@@ -59,7 +59,7 @@ export class AlbumSlide extends Component {
 			(prevProps.autoplay !== autoplay || this.state.interval === undefined) ) {
 			let x = window.setInterval(() => {
 				this.goToNextSlide();
-			}, 3000);
+			}, 5000);
 
 			this.setState({interval : x});
 		}

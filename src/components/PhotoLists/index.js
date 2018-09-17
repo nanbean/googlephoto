@@ -32,7 +32,10 @@ const MasonryComponent = ({photos}) => {
 	function cellRenderer({index, key, parent, style}) {
 		const item = photos[index];
 		const {mediaMetadata} = item;
-		const height = mediaMetadata && columnWidth * (mediaMetadata.height / mediaMetadata.width) || defaultHeight;
+		let height = defaultHeight;
+		if (mediaMetadata) {
+			height = columnWidth * (mediaMetadata.height / mediaMetadata.width);
+		}
 
 		return (
 			<CellMeasurer cache={cache} index={index} key={key} parent={parent}>
