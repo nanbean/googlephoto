@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Dot from './dot';
 
-const Dots = ( { index, images, dotClick, visible } ) => {
+const Dots = ( {index, images, dotClick, visible} ) => {
 
 	if (!visible) {
 		return null;

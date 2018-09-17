@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
 	Header,
 	Loader
@@ -13,11 +13,11 @@ import {
 	setAlbumId,
 	setAlbumTitle
 } from '../actions/ui/album';
-import { fetchGetAlbumItems } from '../actions/albumActions';
+import {fetchGetAlbumItems} from '../actions/albumActions';
 
 export class Album extends Component {
 	componentDidMount() {
-		const { albums, match } = this.props;
+		const {albums, match} = this.props;
 		const id = match && match.params && match.params.id;
 		const album = albums && albums.find(i => i.id === id);
 		const title = album && album.title;
@@ -28,7 +28,7 @@ export class Album extends Component {
 	}
 
 	render() {
-		const { fetching, id, photos, title } = this.props;
+		const {fetching, id, photos, title} = this.props;
 
 		return (
 			<div>

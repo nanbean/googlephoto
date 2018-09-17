@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Loader } from 'semantic-ui-react';
+import {connect} from 'react-redux';
+import {Loader} from 'semantic-ui-react';
 
 import PhotoLists from '../components/PhotoLists';
 import FilterSelector from '../components/FilterSelector';
@@ -18,7 +18,7 @@ export class Filter extends Component {
 	}
 
 	render() {
-		const { fetching, filter, photos, filterList } = this.props;
+		const {fetching, filter, photos, filterList} = this.props;
 
 		return (
 			<div>

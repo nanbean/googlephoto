@@ -17,12 +17,12 @@ export default function(state = initialState, action) {
 	case SET_TRANSLATE_VALUE:
 		//console.log('[Reducer] [albumSlide] SET_TRANSLATE_VALUE!!');
 		//console.log(action.payload);
-		return { ...state, translateValue: action.payload };
+		return {...state, translateValue: action.payload};
 
 	case SET_INDEX:
 		//console.log('[Reducer] [albumSlide] SET_INDEX!!');
 		//console.log(action.payload);
-		return { ...state, index:action.payload };
+		return {...state, index:action.payload};
 
 	default:
 		break;

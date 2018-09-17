@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Route, Link } from 'react-router-dom';
-import { Icon, Menu } from 'semantic-ui-react';
+import {Route, Link} from 'react-router-dom';
+import {Icon, Menu} from 'semantic-ui-react';
 
 import './index.css';
 
@@ -40,7 +40,7 @@ class MenuBar extends Component {
 								key={route.path}
 								exact={route.exact}
 								path={route.path}
-								children={({ match }) => { // eslint-disable-line react/no-children-prop
+								children={({match}) => {// eslint-disable-line react/no-children-prop
 									return (
 										<Menu.Item
 											as={Link}
@@ -74,9 +74,6 @@ class MenuBar extends Component {
 
 MenuBar.propTypes = {
 	auth: PropTypes.bool.isRequired,
-	match: PropTypes.shape({
-		url: PropTypes.string.isRequired
-	}).isRequired,
 	visible: PropTypes.bool.isRequired
 };
 

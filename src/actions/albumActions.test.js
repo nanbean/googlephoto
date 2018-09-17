@@ -7,7 +7,7 @@ import fetchMock from 'fetch-mock';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('Album Test Cases', () => {
+describe('albumActions Test Cases', () => {
 	afterEach(() => {
 		fetchMock.reset();
 		fetchMock.restore();
@@ -15,12 +15,12 @@ describe('Album Test Cases', () => {
 
 	it('creates FETCH_GET_ALBUM_LIST_SUCCESS when fetching fetchGetAlbumList has been done', () => {
 		fetchMock
-			.getOnce('/photo/getAlbumList', { body: { albums: ['a', 'b', 'c'] }, headers: { 'content-type': 'application/json' } });
+			.getOnce('/photo/getAlbumList', {body: {albums: ['a', 'b', 'c']}, headers: {'content-type': 'application/json'}});
 		const expectedActions = [
-			{ type: types.FETCH_GET_ALBUM_LIST_REQUEST },
-			{ type: types.FETCH_GET_ALBUM_LIST_SUCCESS, body: { albums: ['a', 'b', 'c'] } }
+			{type: types.FETCH_GET_ALBUM_LIST_REQUEST},
+			{type: types.FETCH_GET_ALBUM_LIST_SUCCESS, body: {albums: ['a', 'b', 'c']}}
 		];
-		const store = mockStore({ albumList: [] });
+		const store = mockStore({albumList: []});
 
 		return store.dispatch(actions.fetchGetAlbumList()).then(() => {
 			expect(store.getActions()).toEqual(expectedActions);
@@ -29,12 +29,12 @@ describe('Album Test Cases', () => {
 
 	it('creates FETCH_GET_ALBUM_ITEMS_SUCCESS when fetching fetchGetAlbumItems has been done', () => {
 		fetchMock
-			.getOnce('/photo/album/test', { body: { mediaItems: ['a', 'b', 'c'] }, headers: { 'content-type': 'application/json' } });
+			.getOnce('/photo/album/test', {body: {mediaItems: ['a', 'b', 'c']}, headers: {'content-type': 'application/json'}});
 		const expectedActions = [
-			{ type: types.FETCH_GET_ALBUM_ITEMS_REQUEST },
-			{ type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS, body: { mediaItems: ['a', 'b', 'c'] } }
+			{type: types.FETCH_GET_ALBUM_ITEMS_REQUEST},
+			{type: types.FETCH_GET_ALBUM_ITEMS_SUCCESS, body: {mediaItems: ['a', 'b', 'c']}}
 		];
-		const store = mockStore({ mediaItems: [] });
+		const store = mockStore({mediaItems: []});
 
 		return store.dispatch(actions.fetchGetAlbumItems('test')).then(() => {
 			expect(store.getActions()).toEqual(expectedActions);
