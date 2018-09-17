@@ -115,4 +115,4 @@ service.register('stop', function(message) {
 	});
 });
 
-app.setService(service);
+app.setService(service, printDbgMsg);

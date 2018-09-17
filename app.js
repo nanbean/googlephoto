@@ -14,6 +14,7 @@ const config = require('./config.js');
 const fs = require('fs');
 
 var webOsservice;
+var webOsprintDbgMsg;
 
 var app = express();
 var fileStore = sessionFileStore(session);
@@ -84,7 +85,7 @@ app.get('/auth/google', passport.authenticate('google', {
 	scope: config.scopes,
 	failureFlash: true,  // Display errors to the user.
 	session: true,
-	accessType: 'offline', 
+	accessType: 'offline',
 	prompt: 'consent'
 }));
 
@@ -229,6 +230,7 @@ app.get('/photo/getAlbumUpdate', function (req, res) {
 });
 
 app.get('/push', async function (req, res) {
+	webOsprintDbgMsg('[googlephoto Service] push Called...');
 	try {
 		await scheduler.checkUpdate();
 	} catch (error) {
@@ -274,6 +276,7 @@ app.get('/push', async function (req, res) {
 						},
 						(res) => {}
 					);
+					webOsprintDbgMsg('[googlephoto Service] push webOsservice called');
 					res.status(200).send({result: true});
 				} catch (err) {
 					res.status(200).send({result: false, message: 'Device does not support webOsservice.'});
@@ -285,8 +288,9 @@ app.get('/push', async function (req, res) {
 	}
 });
 
-app.setService = function (service) {
+app.setService = function (service, printDbgMsg) {
 	webOsservice = service;
+	webOsprintDbgMsg = printDbgMsg;
 };
 
 // refresh album list and shared album list
