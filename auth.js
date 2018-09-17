@@ -22,16 +22,12 @@ exports.init = (passport) => {
 };
 
 let saveToken = (token) => {
-	fs.writeFileSync(config.tokenPath, token, (err) => {
-		if (err) throw err;
-	});
+	fs.writeFileSync(config.tokenPath, token, 'utf-8');
 };
 exports.saveToken = saveToken;
 
 let saveRefreshToken = (refreshToken) => {
-	fs.writeFileSync(config.refreshTokenPath, refreshToken, (err) => {
-		if (err) throw err;
-	});
+	fs.writeFileSync(config.refreshTokenPath, refreshToken, 'utf-8');
 };
 exports.saveRefreshToken = saveRefreshToken;
 
