@@ -30,7 +30,8 @@ var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flag
 app.use(logger('combined', {stream: accessLogStream}));
 
 // setup scheduler
-scheduler.registerSchedule(config.checkSharedAlbumInterval);
+scheduler.registerSchedule(config.checkSharedAlbumInterval, scheduler.checkUpdate);
+scheduler.registerSchedule(config.refreshTokenInterval, scheduler.refreshToken);
 
 const albumCache = persist.create({
 	dir: config.albumCachePath,
@@ -63,7 +64,7 @@ app.use(sessionMiddleware);
 // Set up OAuth 2.0 authentication through the passport.js library.
 const passport = require('passport');
 const auth = require('./auth');
-auth(passport);
+auth.init(passport);
 
 // Set up passport and session handling.
 app.use(passport.initialize());
@@ -82,7 +83,9 @@ app.get('/login', function(req, res) {
 app.get('/auth/google', passport.authenticate('google', {
 	scope: config.scopes,
 	failureFlash: true,  // Display errors to the user.
-	session: true
+	session: true,
+	accessType: 'offline', 
+	prompt: 'consent'
 }));
 
 // Callback receiver for the OAuth process after log in.
@@ -97,10 +100,8 @@ app.get(
 	),
 	function (req, res) {
 		// User has logged in.
-		// console.log('callback - req.user: ', req.user);
-		fs.writeFile(config.tokenPath, req.user.token, (err) => {
-			if (err) throw err;
-		});
+		auth.saveToken(req.user.token);
+		auth.saveRefreshToken(req.user.refreshToken);
 		res.sendFile('index.html', {root: path.join(__dirname, '../build')});
 	}
 );
