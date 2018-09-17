@@ -24,12 +24,10 @@ export class SlideList extends Component {
 
 	render = () => {
 		const {translateValue} = this.props;
+		
 		return (
 			<div className="slider-wrapper"
-				style={{
-					transform: `translateX(${translateValue}px)`,
-					transition: 'transform ease-out 0.45s'
-				}}>
+				style={{transform: `translateX(${translateValue}px)`}}>
 				{
 					this.renderSlides()
 				}

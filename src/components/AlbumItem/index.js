@@ -12,13 +12,17 @@ export class AlbumItem extends Component {
 	}
 
 	render () {
-		const {coverPhotoBaseUrl, title} = this.props;
+		const {coverPhotoBaseUrl, height, title, width} = this.props;
 
 		return (
 			<div className="album-item">
 				<div
 					className="image"
-					style={{backgroundImage: `url(${coverPhotoBaseUrl})`}}
+					style={{
+						backgroundImage: `url(${coverPhotoBaseUrl})`,
+						width: `${width}px`,
+						height: `${height}px`
+					}}
 					onClick={this.handleClick}
 				/>
 				<div className="title">{title}</div>
@@ -29,14 +33,18 @@ export class AlbumItem extends Component {
 
 AlbumItem.propTypes = {
 	coverPhotoBaseUrl: PropTypes.string.isRequired,
-	id: PropTypes.string.isRequired,
-	title: PropTypes.string.isRequired
-};
-
-AlbumItem.propTypes = {
 	history: PropTypes.shape({
 		push: PropTypes.func.isRequired
-	})
+	}).isRequired,
+	id: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	height: PropTypes.number,
+	width: PropTypes.number
+};
+
+AlbumItem.defaultProps = {
+	height: 250,
+	width: 250
 };
 
 export default withRouter(AlbumItem);

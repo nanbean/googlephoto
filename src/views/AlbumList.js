@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Loader} from 'semantic-ui-react';
 
-import AlbumLists from '../components/AlbumLists';
+import {AlbumListsBlock, AlbumListsGrid} from '../components/AlbumLists';
+import AlbumListsMenu from '../components/AlbumListsMenu';
 
 import {
 	clearAlbumItems,
 	fetchGetAlbumList
 } from '../actions/albumActions';
 import {fetchGetAuth} from '../actions/authActions';
+import {
+	setAlbumListLayout
+} from '../actions/ui/albumList';
 
 export class AlbumList extends Component {
 	componentDidMount() {
@@ -19,14 +23,27 @@ export class AlbumList extends Component {
 	}
 
 	render() {
-		const {albums, fetching} = this.props;
+		const {albums, fetching, layout} = this.props;
 
 		return (
 			<div>
 				<Loader active={fetching} size="huge"/>
-				<AlbumLists
-					albums={albums}
+				<AlbumListsMenu
+					layout={layout}
+					setAlbumListLayout={this.props.setAlbumListLayout}
 				/>
+				{
+					layout === 'grid' &&
+					<AlbumListsGrid
+						albums={albums}
+					/>
+				}
+				{
+					layout === 'block' &&
+					<AlbumListsBlock
+						albums={albums}
+					/>
+				}
 			</div>
 		);
 	}
@@ -37,12 +54,15 @@ AlbumList.propTypes = {
 	clearAlbumItems: PropTypes.func.isRequired,
 	fetchGetAlbumList: PropTypes.func.isRequired,
 	fetchGetAuth: PropTypes.func.isRequired,
-	fetching: PropTypes.bool.isRequired
+	fetching: PropTypes.bool.isRequired,
+	layout: PropTypes.string.isRequired,
+	setAlbumListLayout: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
 	albums: state.albumList.albums,
-	fetching: state.albumList.fetching
+	fetching: state.albumList.fetching,
+	layout: state.ui.albumList.layout
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -54,6 +74,9 @@ const mapDispatchToProps = dispatch => ({
 	},
 	fetchGetAuth() {
 		dispatch(fetchGetAuth());
+	},
+	setAlbumListLayout(params) {
+		dispatch(setAlbumListLayout(params));
 	}
 });
 
