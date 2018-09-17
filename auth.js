@@ -3,19 +3,6 @@ const refresh = require('passport-oauth2-refresh');
 const GoogleOAuth2Strategy = require('passport-google-oauth').OAuth2Strategy;
 const fs = require('fs');
 
-// module.exports = (passport) => {
-// 	passport.serializeUser((user, done) => done(null, user));
-// 	passport.deserializeUser((user, done) => done(null, user));
-// 	passport.use(new GoogleOAuth2Strategy(
-// 		{
-// 			clientID: config.oAuthClientID,
-// 			clientSecret: config.oAuthclientSecret,
-// 			callbackURL: config.oAuthCallbackUrl
-// 		},
-// 		(token, refreshToken, profile, done) => done(null, {profile, token, refreshToken})
-// 	));
-// };
-
 exports.init = (passport) => {
 	passport.serializeUser((user, done) => done(null, user));
 	passport.deserializeUser((user, done) => done(null, user));
