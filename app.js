@@ -234,7 +234,7 @@ app.get('/push', async function (req, res) {
 	} catch (error) {
 		res.status(200).send({result: false, message: error.message});
 	}
-	
+
 	let albumId = '';
 	try {
 		albumId = JSON.parse(fs.readFileSync(config.albumUpdateInfoPath, 'utf-8')).updateList[0].id;
@@ -290,17 +290,19 @@ app.setService = function (service) {
 };
 
 // refresh album list and shared album list
-var refreshAlbumList = async function() {
+var refreshAlbumList = function() {
 	// var date = new Date();
 	// console.log(date + ' refreshAlbumList()');
 	let token = googleapi.getToken();
-	const {result, error} = await googleapi.getAlbumList(null, token);
-	if (!error) {
-		albumCache.setItem('albumList', result);
-	}
-	const {res, err} = await googleapi.getSharedAlbumList(null, token);
-	if (!err) {
-		sharedAlbumCache.setItem('shareAlbumList', res);
+	if (token) {
+		const {result, error} = googleapi.getAlbumList(null, token);
+		if (!error) {
+			albumCache.setItem('albumList', result);
+		}
+		const {res, err} = googleapi.getSharedAlbumList(null, token);
+		if (!err) {
+			sharedAlbumCache.setItem('shareAlbumList', res);
+		}
 	}
 };
 scheduler.registerSchedule(config.refreshAlbumListInterval, refreshAlbumList);
