@@ -141,6 +141,7 @@ app.get('/photo/album/:albumId', async function (req, res) {
 	if (token != undefined) {
 		const cachedPhotos = await photoCache.getItem(parameters.albumId);
 		if (cachedPhotos) {
+			cachedPhotos.pictures.reverse();
 			res.status(200).send(cachedPhotos);
 		} else {
 			const {result, error} = await googleapi.getSearchedPhotoList(parameters, token);
@@ -150,8 +151,10 @@ app.get('/photo/album/:albumId', async function (req, res) {
 				req.session.destroy();
 				res.status(401).send('User token is not valid. Please log in again.');
 			} else {
-				res.status(200).send(result);
 				photoCache.setItem(parameters.albumId, result);
+				var reversedResult = Object.assign({}, result);
+				reversedResult.pictures.reverse();
+				res.status(200).send(reversedResult);
 			}
 		}
 	} else {
@@ -260,12 +263,13 @@ app.get('/push', async function (req, res) {
 				try {
 					webOsservice.call('luna://com.webos.notification/createToast',
 						{
+							iconUrl: 'http://127.0.0.1:8090/ms-icon-150x150.png',
 							sourceId: 'com.lge.app.viewster',
 							onclick: {
 								appId: 'com.lge.app.viewster',
 								params : {albumId: albumId}
 							},
-							message: 'You have new photos',
+							message: 'You have new photo(s)',
 							noaction: false,
 							persistent: true,
 							extra: {
