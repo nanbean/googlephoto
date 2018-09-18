@@ -111,6 +111,14 @@
 	transform: translate(30px, -3px);
 }
 
+.slide_item {
+	display: inline-block;
+	background-color: black;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 button {
 	position: absolute;
 	bottom: 25px;
