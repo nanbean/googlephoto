@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
+import VirtualSlider from 'react-virtual-slider';
+
 import SlideSettings from '../components/SlideSettings';
 
-import SlideList from '../components/SlideList';
 import ToggleSettings from '../components/ToggleSettings';
 import Dots from '../components/Dots';
 import LeftArrow from '../components/Arrows/leftArrow';
@@ -71,7 +72,7 @@ export class AlbumSlide extends Component {
 
 	componentWillUnmount () {
 
-		const {setIndex, setTranslateValue} = this.props;
+		const {setIndex} = this.props;
 
 		this.props.setFullScreen(false);
 
@@ -80,8 +81,8 @@ export class AlbumSlide extends Component {
 			this.setState({interval : undefined});
 		}
 
-		setTranslateValue(0);
 		setIndex(0);
+		this.moveSlide(0);
 	}
 
 	onMouseMove = () => {
@@ -91,49 +92,60 @@ export class AlbumSlide extends Component {
 	goToPrevSlide = () => {
 		//console.log('[AlbumSlide] goToPrevSlide called');
 
-		const {index, translateValue, setIndex, setTranslateValue} = this.props;
+		const {index, setIndex} = this.props;
 
 		if (index === 0) return;
 
-		setTranslateValue(translateValue + this.getSlideWidth());
 		setIndex(index - 1);
+		this.moveSlide(index - 1);
+	}
+
+	moveSlide = (i) => {
+		if (!this.slider)
+			return;
+
+		this.slider.scrollTo(i);
 	}
 
 	goToNextSlide = () => {
 		//console.log('[AlbumSlide] goToNextSlide called');
 
-		const {photos, index, translateValue, setIndex, setTranslateValue} = this.props;
+		const {photos, index, setIndex} = this.props;
+
 		if (index === photos.length - 1) {
-			setTranslateValue(0);
+			this.moveSlide(0);
 			return setIndex(0);
 		}
 
-		setTranslateValue(translateValue - this.getSlideWidth());
 		setIndex(index + 1);
-	}
-
-	getSlideWidth = () => {
-		let dom = document.querySelector('.slide-item');
-
-		if (!dom)
-			return 0;
-
-		let cw = dom.clientWidth;
-		return  cw;
+		this.moveSlide(index + 1);
 	}
 
 	handleDotClick = (i) => {
-		const {index, translateValue, setIndex, setTranslateValue} = this.props;
+		const {index, setIndex} = this.props;
 		if (i === index) return;
 
-		if (i > index) {
-			setTranslateValue(-(i * this.getSlideWidth()));
-		}
-		else {
-			setTranslateValue(translateValue + ((index - i) * (this.getSlideWidth())));
-		}
-
 		setIndex(i);
+		this.slider.scrollTo(i);
+	}
+
+	renderItem = (index) => {
+		const {photos} = this.props;
+
+		let photoUrl = photos[index].baseUrl;
+		let id = photos[index].id;
+
+		const styles = {
+			item: {
+				width: '1920px',
+				height: '1080px',
+				backgroundImage: `url(${photoUrl}=w1920-h1080)`
+			}
+		};
+
+		return (
+			<div className="slide_item" key={id} style={styles.item}/>
+		);
 	}
 
 	render() {
@@ -142,7 +154,6 @@ export class AlbumSlide extends Component {
 			id,
 			photos,
 			index,
-			translateValue,
 			toggleSetting,
 			showDots,
 			coolButtons,
@@ -155,10 +166,14 @@ export class AlbumSlide extends Component {
 				className="slider"
 				onMouseMove={this.onMouseMove}
 			>
-				<SlideList
-					photos={photos}
-					translateValue={translateValue}
-				/>
+				<div className="slider-wrapper">
+					<VirtualSlider
+						ref={slider => this.slider = slider}
+						itemRenderer={this.renderItem}
+						itemSize={1920}
+						length={photos.length}
+					/>
+				</div>
 
 				<div
 					style={cursorState ? {} : {display: 'none'}}
