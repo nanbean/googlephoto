@@ -8,12 +8,14 @@ import {
 
 import PhotoLists from '../components/PhotoLists';
 import SlideShowButton from '../components/SlideShowButton';
+import VideoGenerateButton from '../components/VideoGenerateButton';
 
 import {
 	setAlbumId,
 	setAlbumTitle
 } from '../actions/ui/album';
 import {fetchGetAlbumItems} from '../actions/albumActions';
+import {fetchGenerateVideo} from '../actions/videoGenerateActions';
 
 export class Album extends Component {
 	componentDidMount() {
@@ -37,7 +39,11 @@ export class Album extends Component {
 					<Header as="h2" textAlign="center">
 						{title}
 					</Header>
-					<SlideShowButton id={id}/>
+					<VideoGenerateButton
+						id={id}
+						fetchGenerateVideo={this.props.fetchGenerateVideo}
+					/>
+					<SlideShowButton id={id} />
 				</div>
 				<PhotoLists
 					photos={photos}
@@ -49,6 +55,7 @@ export class Album extends Component {
 
 Album.propTypes = {
 	albums: PropTypes.array.isRequired,
+	fetchGenerateVideo: PropTypes.func.isRequired,
 	fetchGetAlbumItems: PropTypes.func.isRequired,
 	fetching: PropTypes.bool.isRequired,
 	id: PropTypes.string.isRequired,
@@ -72,6 +79,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+	fetchGenerateVideo(params) {
+		dispatch(fetchGenerateVideo(params));
+	},
 	fetchGetAlbumItems(params) {
 		dispatch(fetchGetAlbumItems(params));
 	},
