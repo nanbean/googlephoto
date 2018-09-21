@@ -1,6 +1,7 @@
 var express = require('express');
 var session = require('express-session');
 var sessionFileStore = require('session-file-store');
+var rp = require('request-promise');
 var path = require('path');
 var https = require('https');
 var cookieParser = require('cookie-parser');
@@ -302,6 +303,71 @@ app.get('/push', async function (req, res) {
 	} else {
 		res.status(200).send({result: false, error: error});
 	}
+});
+
+// Request video generation for selected album.
+app.get('/generatevideo/:albumId', async function (req, res) {
+	let parameters = {
+		albumId: req.params.albumId,
+		pageSize: config.searchPageSize
+	};
+	let token = googleapi.getToken();
+	const returnValue = {
+		result: true
+	};
+
+	if (token != undefined) {
+		const cachedPhotos = await photoCache.getItem(parameters.albumId);
+		if (cachedPhotos) {
+			cachedPhotos.pictures.reverse();
+			const body = await rp.post(config.videoEndpoint + '/photo/makemovie', {
+				headers: {'Content-Type': 'application/json'},
+				body: cachedPhotos,
+				json: true
+			});
+			returnValue.videoUrl = body.videoUrl;
+		} else {
+			const {result, error} = await googleapi.getSearchedPhotoList(parameters, token);
+			if (error) {
+				fs.writeFile(config.tokenPath, '');
+				req.logout();
+				req.session.destroy();
+				returnValue.result = false;
+				returnValue.reason = 'User token is not valid. Please log in again.';
+			} else {
+				const body = await rp.post(config.videoEndpoint + '/photo/makemovie', {
+					headers: {'Content-Type': 'application/json'},
+					body: result,
+					json: true
+				});
+				returnValue.videoUrl = body.videoUrl;
+			}
+		}
+	} else {
+		returnValue.result = false;
+		returnValue.reason = 'User not logged in.';
+	}
+
+	console.log(returnValue);
+
+	if (returnValue.result) {
+		webOsservice.call('luna://com.webos.notification/createToast',
+			{
+				iconUrl: 'http://127.0.0.1:8090/ms-icon-150x150.png',
+				sourceId: 'com.lge.app.viewster',
+				onclick: {
+					appId: 'com.webos.app.browser',
+					params : {target: returnValue.videoUrl}
+				},
+				message: 'Video has been generated',
+				noaction: false,
+				persistent: true
+			},
+			(res) => {}
+		);
+	}
+
+	res.status(returnValue.result ? 200 : 401).send(returnValue);
 });
 
 app.setService = function (service, printDbgMsg) {

@@ -47,6 +47,8 @@ config.albumPageSize = 50;
 // The API end point to use. Do not change.
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';
 
+config.videoEndpoint = 'http://10.186.119.108:8090';
+
 // Google user login token saved file.
 config.tokenPath = config.sessionPath + '/token';
 
