@@ -6,9 +6,12 @@ var https = require('https');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const persist = require('node-persist');
+var rp = require('request-promise');
+var sharp = require('sharp');
 
 const googleapi = require('./googleapi.js');
 const scheduler = require('./scheduler.js');
+const videomaker = require('./videomaker.js');
 
 const config = require('./config.js');
 const fs = require('fs');
@@ -24,6 +27,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
+// make video folder
+try {
+	fs.mkdirSync(config.persistPath + '/videotmp');
+} catch (err) {
+	if (err.code !== 'EEXIST') throw err;
+}
+app.use(express.static(config.persistPath + '/videotmp'));
+
 // create a write stream (in append mode)
 var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flags: 'a'});
 
@@ -31,7 +42,7 @@ var accessLogStream = fs.createWriteStream(config.logPath + '/access.log', {flag
 app.use(logger('combined', {stream: accessLogStream}));
 
 // setup scheduler
-scheduler.registerSchedule(config.checkSharedAlbumInterval, scheduler.checkUpdate);
+// scheduler.registerSchedule(config.checkSharedAlbumInterval, scheduler.checkUpdate);
 scheduler.registerSchedule(config.refreshTokenInterval, scheduler.refreshToken);
 
 const albumCache = persist.create({
@@ -66,6 +77,7 @@ app.use(sessionMiddleware);
 const passport = require('passport');
 const auth = require('./auth');
 auth.init(passport);
+auth.refresh();
 
 // Set up passport and session handling.
 app.use(passport.initialize());
@@ -298,21 +310,93 @@ app.setService = function (service, printDbgMsg) {
 };
 
 // refresh album list and shared album list
-var refreshAlbumList = function() {
+var refreshAlbumList = async function() {
 	// var date = new Date();
 	// console.log(date + ' refreshAlbumList()');
 	let token = googleapi.getToken();
 	if (token) {
-		const {result, error} = googleapi.getAlbumList(null, token);
+		let {albumResult, error} = await googleapi.getAlbumList(null, token);
 		if (!error) {
-			albumCache.setItem('albumList', result);
+			albumCache.setItem('albumList', albumResult);
 		}
-		const {res, err} = googleapi.getSharedAlbumList(null, token);
-		if (!err) {
-			sharedAlbumCache.setItem('shareAlbumList', res);
+		let {salbumResult, error2} = await googleapi.getSharedAlbumList(null, token);
+		if (!error2) {
+			sharedAlbumCache.setItem('shareAlbumList', salbumResult);
 		}
 	}
 };
 scheduler.registerSchedule(config.refreshAlbumListInterval, refreshAlbumList);
+
+var getPhotos = async function (tmpPath, pictures) {
+	var i = 0;
+	let images = [];
+	var localFilePath = '';
+	try {
+		do {
+			// console.log(`getting ${i} picture`);
+			const body = await rp.get(pictures[i].baseUrl + '=w500-h500', {
+				headers: {'Content-Type': 'application/json'},
+				encoding: null
+			});
+			localFilePath = tmpPath + '/' + pictures[i].filename;
+			fs.writeFileSync(localFilePath, body);
+			// await sharp({
+			// 	create: {
+			// 		width: 500,
+			// 		height: 500,
+			// 		channels: 4,
+			// 		background: { r: 0, g: 0, b: 0, alpha: 1 }
+			// 	}
+			// })
+			// 	.toFile('background.jpg');
+			// console.log('1111');
+			await sharp('./public/background.jpg')
+				.overlayWith(localFilePath)
+				.toFile(tmpPath + '/resize_' + pictures[i].filename)
+				.then(function() {
+					// console.log('saved resized file: ', tmpPath + '/resize_' + pictures[i].filename);
+				});
+
+			images.push(tmpPath + '/resize_' + pictures[i].filename);
+			// console.log(`done ${i}`);
+			i++;
+		} while (i < pictures.length);
+	} catch (err) {
+		// console.log(err);
+	}
+
+	return images;
+};
+
+var download = async function (tmpPath, pictures) {
+	const result = await getPhotos(tmpPath, pictures);
+	// console.log('download complete');
+	return result;
+};
+
+app.post('/photo/makemovie', async function(req, res) {
+	// console.log('/photo/makemovie req body:', req.body);
+	let date = new Date();
+	let dateVal = date.getTime();
+	// let seq = 0;
+	let pictures = req.body.pictures;
+	let tmpPath = '/var/tmp/videotmp/' + dateVal;
+	// mkdir tmpPath
+	try {
+		fs.mkdirSync(tmpPath);
+	} catch (err) {
+		if (err.code !== 'EEXIST') throw err;
+	}
+
+	// download and resize pictures
+	const images = await download(tmpPath, pictures);
+	
+	// make video
+	let target = tmpPath + '/movie.mp4';
+	await videomaker.makevideo(images, target, () => {
+		let output = 'SERVER_URL' + target.split('/').reverse()[1] + '/movie.mp4';
+		res.status(200).send({result: true, output: output, videoUrl: output});
+	});
+});
 
 module.exports = app;

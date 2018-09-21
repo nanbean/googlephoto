@@ -36,19 +36,21 @@ exports.refresh = () => {
 	try {
 		savedRefreshToken = fs.readFileSync(config.refreshTokenPath, 'utf-8');
 	} catch (err) { 
-		throw err;
+		savedRefreshToken = null;
 	}
 
-	// console.log('auth.refresh()..refreshToken:', savedRefreshToken);
-	refresh.requestNewAccessToken('google', savedRefreshToken, function(err, accessToken, refreshToken) {
-		// You have a new access token, store it in the user object,
-		// or use it to make a new request.
-		// `refreshToken` may or may not exist, depending on the strategy you are using.
-		// You probably don't need it anyway, as according to the OAuth 2.0 spec,
-		// it should be the same as the initial refresh token.
-		// console.log('requestNewAccessToken result..err:', err, 'accessToken:', accessToken, 'refreshToken:', refreshToken);
-		if (!err) {
-			saveToken(accessToken);
-		}
-	});
+	if (savedRefreshToken) {
+		// console.log('auth.refresh()..refreshToken:', savedRefreshToken);
+		refresh.requestNewAccessToken('google', savedRefreshToken, function(err, accessToken, refreshToken) {
+			// You have a new access token, store it in the user object,
+			// or use it to make a new request.
+			// `refreshToken` may or may not exist, depending on the strategy you are using.
+			// You probably don't need it anyway, as according to the OAuth 2.0 spec,
+			// it should be the same as the initial refresh token.
+			// console.log('requestNewAccessToken result..err:', err, 'accessToken:', accessToken, 'refreshToken:', refreshToken);
+			if (!err) {
+				saveToken(accessToken);
+			}
+		});
+	}
 };

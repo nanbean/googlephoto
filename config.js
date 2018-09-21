@@ -1,10 +1,10 @@
 const config = {};
 
 // The OAuth client ID from the Google Developers console.
-config.oAuthClientID = 'your client id';
+config.oAuthClientID = '486359001402-bigjsltgembutm3f0fcveesqjcnd8iir.apps.googleusercontent.com';
 
 // The OAuth client secret from the Google Developers console.
-config.oAuthclientSecret = 'your client secret';
+config.oAuthclientSecret = 'v3Lye4auwGDgjeFfVGJhFs8A';
 
 // The port where the app should listen for requests.
 config.port = 8090;
